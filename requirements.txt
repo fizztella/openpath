@@ -1,0 +1,8 @@
+pandas
+plotly
+streamlit
+requests
+beautifulsoup4
+pytest
+ruff
+
