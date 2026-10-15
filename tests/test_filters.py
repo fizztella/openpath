@@ -14,7 +14,9 @@ def load_programs():
 def test_ielts_filter_excludes_higher_requirement():
     result = filter_programs(load_programs(), 5.5, True, 5_000_000, False)
 
-    assert result["university"].tolist() == ["University of Aizu"]
+    numeric = result["ielts_requirement_type"].isin(["Minimum", "Target"])
+    assert (result.loc[numeric, "ielts_overall"] <= 5.5).all()
+    assert "University of Aizu" in result["university"].tolist()
 
 
 def test_standardized_test_filter_excludes_aizu():
@@ -26,21 +28,20 @@ def test_standardized_test_filter_excludes_aizu():
 def test_budget_filter_uses_total_first_year_academic_fees():
     result = filter_programs(load_programs(), 7.0, False, 1_900_000, False)
 
-    assert result["university"].tolist() == [
-        "Yamanashi Gakuin University - iCLA"
-    ]
+    assert (result["estimated_first_year_fees_jpy"] <= 1_900_000).all()
+    assert "Yamanashi Gakuin University - iCLA" in result["university"].tolist()
+    assert "Data Science and AI" not in result["program"].tolist()
 
 
 def test_maximum_waiver_scenario_reduces_tuition_but_not_other_fees():
     result = filter_programs(load_programs(), 7.0, False, 700_000, True)
-    fees_by_university = result.set_index("university")[
+    fees_by_program = result.set_index("program")[
         "estimated_first_year_fees_jpy"
     ].to_dict()
 
-    assert fees_by_university == {
-        "Yamanashi Gakuin University - iCLA": 200_000,
-        "Tokyo International University": 610_000,
-    }
+    assert fees_by_program["Data Science"] == 200_000
+    assert fees_by_program["Data Science and AI"] == 610_000
+    assert fees_by_program["Sustainability and Tourism - Data Science and Information System"] == 200_000
 
 
 def test_field_filter_returns_only_selected_subjects():
@@ -48,7 +49,8 @@ def test_field_filter_returns_only_selected_subjects():
         load_programs(), 7.0, True, 5_000_000, False, ["Computer Science"]
     )
 
-    assert result["program"].tolist() == ["ICT Global All-English Program"]
+    assert not result.empty
+    assert (result["field_category"] == "Computer Science").all()
 
 
 def test_program_without_published_ielts_minimum_is_not_incorrectly_excluded():

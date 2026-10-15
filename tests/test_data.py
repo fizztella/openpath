@@ -5,6 +5,12 @@ import pandas as pd
 DATA_PATH = Path(__file__).parents[1] / "data" / "programs.csv"
 
 
+def test_prototype_contains_at_least_ten_programs():
+    programs = pd.read_csv(DATA_PATH)
+
+    assert len(programs) >= 10
+
+
 def test_program_data_has_required_columns():
     programs = pd.read_csv(DATA_PATH)
     required_columns = {
