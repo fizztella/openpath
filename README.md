@@ -2,6 +2,8 @@
 
 OpenPath helps international applicants compare degree programs using admission requirements, tuition costs, scholarships, and verified official sources.
 
+The interface is available in English, Russian, Ukrainian, Spanish, German, and Japanese. University names and source-derived admissions text remain in English to preserve the wording of official information.
+
 ## Project status
 
 The project is currently in its first development stage. The prototype compares undergraduate programs in Japan, Austria, and the United States using language, field, country, test, and budget filters.

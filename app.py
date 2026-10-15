@@ -5,13 +5,27 @@ import streamlit as st
 
 from checklist import build_application_checklist, checklist_progress
 from filters import evaluate_programs
+from i18n import LANGUAGES, translate
 from shortlist import add_program_keys, build_shortlist, next_deadline, shortlist_csv
 from timeline import build_application_timeline, next_timeline_event, timeline_csv
 
 st.set_page_config(page_title="OpenPath", page_icon="🎓", layout="wide")
 
 st.title("OpenPath")
-st.write("Find international degree programs that match your qualifications and budget.")
+language_name = st.selectbox(
+    "Interface language",
+    options=list(LANGUAGES),
+    index=0,
+    key="interface_language",
+)
+language_code = LANGUAGES[language_name]
+
+
+def t(text):
+    return translate(language_code, text)
+
+
+st.write(t("Find international degree programs that match your qualifications and budget."))
 
 data_path = Path(__file__).parent / "data" / "programs.csv"
 programs = pd.read_csv(data_path)
@@ -22,39 +36,39 @@ st.caption(
 )
 
 col1, col2, col3 = st.columns(3)
-col1.metric("Programs", len(programs))
-col2.metric("Universities", programs["university"].nunique())
-col3.metric("Countries", programs["country"].nunique())
+col1.metric(t("Programs"), len(programs))
+col2.metric(t("Universities"), programs["university"].nunique())
+col3.metric(t("Countries"), programs["country"].nunique())
 
 program_search_tab, shortlist_tab = st.tabs(
-    ["🔎 Program search", "⭐ Shortlist & timeline"]
+    [f"🔎 {t('Program search')}", f"⭐ {t('Shortlist & timeline')}"]
 )
 
 with program_search_tab:
-    st.subheader("Your profile")
+    st.subheader(t("Your profile"))
     selected_countries = st.multiselect(
-        "Countries",
+        t("Countries"),
         options=sorted(programs["country"].unique()),
-        placeholder="All countries",
+        placeholder=t("All countries"),
     )
     selected_fields = st.multiselect(
-        "Fields of study",
+        t("Fields of study"),
         options=sorted(programs["field_category"].unique()),
-        placeholder="All fields",
+        placeholder=t("All fields"),
     )
-    ielts_score = st.slider("IELTS overall score", 0.0, 9.0, 6.0, 0.5)
+    ielts_score = st.slider(t("IELTS overall score"), 0.0, 9.0, 6.0, 0.5)
     max_first_year_fees = st.number_input(
-        "Maximum first-year academic fees (USD)",
+        t("Maximum first-year academic fees (USD)"),
         min_value=0,
         max_value=100_000,
         value=20_000,
         step=1_000,
     )
     use_maximum_tuition_waiver = st.checkbox(
-        "Use the maximum published tuition waiver (best-case scenario, not a prediction)"
+        t("Use the maximum published tuition waiver (best-case scenario, not a prediction)")
     )
     allow_standardized_test = st.checkbox(
-        "I can complete an additional standardized academic test"
+        t("I can complete an additional standardized academic test")
     )
 
     all_evaluated = evaluate_programs(
@@ -70,7 +84,7 @@ with program_search_tab:
     if selected_countries:
         evaluated = evaluated[evaluated["country"].isin(selected_countries)]
 
-    st.subheader("Eligibility results")
+    st.subheader(t("Eligibility results"))
     if evaluated.empty:
         st.warning("No programs match the selected countries and fields.")
     else:
@@ -79,22 +93,23 @@ with program_search_tab:
         not_eligible_count = (evaluated["eligibility_status"] == "Not eligible").sum()
 
         result_col1, result_col2, result_col3 = st.columns(3)
-        result_col1.metric("Eligible", int(eligible_count))
-        result_col2.metric("Conditional", int(conditional_count))
-        result_col3.metric("Not eligible", int(not_eligible_count))
+        result_col1.metric(t("Eligible"), int(eligible_count))
+        result_col2.metric(t("Conditional"), int(conditional_count))
+        result_col3.metric(t("Not eligible"), int(not_eligible_count))
 
         selected_statuses = st.multiselect(
-            "Result status",
+            t("Result status"),
             options=["Eligible", "Conditional", "Not eligible"],
             default=["Eligible", "Conditional", "Not eligible"],
+            format_func=t,
         )
         programs_to_show = evaluated[
             evaluated["eligibility_status"].isin(selected_statuses)
         ].copy()
         status_icons = {
-            "Eligible": "🟢 Eligible",
-            "Conditional": "🟡 Conditional",
-            "Not eligible": "🔴 Not eligible",
+            "Eligible": f"🟢 {t('Eligible')}",
+            "Conditional": f"🟡 {t('Conditional')}",
+            "Not eligible": f"🔴 {t('Not eligible')}",
         }
         programs_to_show["status_display"] = programs_to_show[
             "eligibility_status"
@@ -147,7 +162,7 @@ with program_search_tab:
             },
         )
 
-        st.subheader("Program details")
+        st.subheader(t("Program details"))
         for _, program in programs_to_show.iterrows():
             expander_title = (
                 f"{status_icons[program['eligibility_status']]} · "
@@ -259,17 +274,17 @@ with program_search_tab:
 
 with shortlist_tab:
     st.divider()
-    st.subheader("Your shortlist")
+    st.subheader(t("Your shortlist"))
     keyed_programs = add_program_keys(all_evaluated)
     program_labels = keyed_programs.set_index("program_key").apply(
         lambda row: f"{row['university']} — {row['program']} ({row['country']})", axis=1
     ).to_dict()
     selected_program_keys = st.multiselect(
-        "Add programs to compare",
+        t("Add programs to compare"),
         options=keyed_programs["program_key"].tolist(),
         format_func=lambda key: program_labels[key],
         key="shortlist_program_keys",
-        placeholder="Choose one or more programs",
+        placeholder=t("Choose one or more programs"),
     )
 
     shortlist = build_shortlist(all_evaluated, selected_program_keys)
@@ -278,10 +293,10 @@ with shortlist_tab:
     else:
         upcoming_deadline = next_deadline(shortlist)
         shortlist_col1, shortlist_col2, shortlist_col3 = st.columns(3)
-        shortlist_col1.metric("Selected programs", len(shortlist))
-        shortlist_col2.metric("Countries", shortlist["country"].nunique())
+        shortlist_col1.metric(t("Selected programs"), len(shortlist))
+        shortlist_col2.metric(t("Countries"), shortlist["country"].nunique())
         shortlist_col3.metric(
-            "Next deadline",
+            t("Next deadline"),
             upcoming_deadline.strftime("%Y-%m-%d")
             if upcoming_deadline is not None
             else "No upcoming date",
@@ -292,9 +307,9 @@ with shortlist_tab:
             "eligibility_status"
         ].map(
             {
-                "Eligible": "🟢 Eligible",
-                "Conditional": "🟡 Conditional",
-                "Not eligible": "🔴 Not eligible",
+                "Eligible": f"🟢 {t('Eligible')}",
+                "Conditional": f"🟡 {t('Conditional')}",
+                "Not eligible": f"🔴 {t('Not eligible')}",
             }
         )
         st.dataframe(
@@ -328,20 +343,20 @@ with shortlist_tab:
             },
         )
         st.download_button(
-            "Download shortlist as CSV",
+            t("Download shortlist as CSV"),
             data=shortlist_csv(shortlist),
             file_name="openpath_shortlist.csv",
             mime="text/csv",
             width="stretch",
         )
 
-        st.subheader("Application timeline")
+        st.subheader(t("Application timeline"))
         st.caption(
             "Official university dates and OpenPath planning milestones are labelled "
             "separately. Planning dates are recommendations, not additional deadlines."
         )
         timeline = build_application_timeline(shortlist)
-        upcoming_only = st.checkbox("Show upcoming events only", value=True)
+        upcoming_only = st.checkbox(t("Show upcoming events only"), value=True)
         timeline_to_show = timeline.copy()
         if upcoming_only:
             timeline_to_show = timeline_to_show[timeline_to_show["days_remaining"] >= 0]
@@ -386,14 +401,14 @@ with shortlist_tab:
             )
 
         st.download_button(
-            "Download application timeline as CSV",
+            t("Download application timeline as CSV"),
             data=timeline_csv(timeline),
             file_name="openpath_application_timeline.csv",
             mime="text/csv",
             width="stretch",
         )
 
-        st.subheader("Application checklist")
+        st.subheader(t("Application checklist"))
         st.caption(
             "This checklist is generated only from requirements already recorded in "
             "OpenPath. Always confirm the final document list on the official website. "
@@ -408,8 +423,10 @@ with shortlist_tab:
         completed_tasks, total_tasks, progress_percent = checklist_progress(
             checklist, completed_task_keys
         )
-        st.write(f"**Overall progress:** {completed_tasks}/{total_tasks} tasks")
-        st.progress(progress_percent / 100, text=f"{progress_percent}% complete")
+        st.write(
+            f"**{t('Overall progress')}:** {completed_tasks}/{total_tasks} {t('tasks')}"
+        )
+        st.progress(progress_percent / 100, text=f"{progress_percent}% {t('complete')}")
 
         for program_key, program_tasks in checklist.groupby("program_key", sort=False):
             university = program_tasks.iloc[0]["university"]
@@ -433,11 +450,11 @@ with shortlist_tab:
                     )
                     st.caption(task["note"])
                 st.link_button(
-                    "Verify requirements at the official source",
+                    t("Verify requirements at the official source"),
                     program_tasks.iloc[0]["source"],
                 )
 
-st.subheader("Sources and limitations")
+st.subheader(t("Sources and limitations"))
 st.write(
     "OpenPath does not treat missing information as zero and does not predict scholarship "
     "probability without reliable historical decision data."
