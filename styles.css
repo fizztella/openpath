@@ -226,12 +226,16 @@ h2, h3 {
     color: var(--op-text) !important;
 }
 
-.stApp [data-testid="stNumberInput"] [data-baseweb="input"],
-.stApp [data-testid="stNumberInput"] [data-baseweb="base-input"],
+.stApp [data-testid="stNumberInputContainer"],
+.stApp [data-testid="stNumberInputContainer"] > div,
 .stApp [data-testid="stNumberInput"] input {
     background: var(--op-panel) !important;
-    border-color: var(--op-border) !important;
     color: var(--op-text) !important;
+}
+
+.stApp [data-testid="stNumberInputContainer"] {
+    border: 1px solid var(--op-border) !important;
+    box-shadow: none !important;
 }
 
 .stApp [data-testid="stNumberInput"] button::before,
@@ -239,32 +243,45 @@ h2, h3 {
     display: none !important;
 }
 
-.stApp [data-testid="stCheckbox"] label > span:first-child,
-.stApp label[data-baseweb="checkbox"] > span:first-child {
+.stApp [data-testid="stCheckbox"] label > div:first-of-type {
     background: var(--op-panel) !important;
     border: 1px solid var(--op-border) !important;
     box-shadow: none !important;
 }
 
-.stApp [data-testid="stCheckbox"] input:checked + span,
-.stApp label[data-baseweb="checkbox"] input:checked + span {
+.stApp [data-testid="stCheckbox"] label:has(input:checked) > div:first-of-type {
     background: var(--op-accent) !important;
     border-color: var(--op-accent) !important;
 }
 
-.stApp [data-testid="stPills"] button,
-.stApp [data-testid="stPills"] [role="button"] {
+.stApp button[data-variant="pills"] {
     background: var(--op-panel) !important;
     border: 1px solid var(--op-border) !important;
     border-radius: 2px !important;
     color: var(--op-text) !important;
 }
 
-.stApp [data-testid="stPills"] button[aria-pressed="true"],
-.stApp [data-testid="stPills"] [role="button"][aria-selected="true"] {
+.stApp button[data-variant="pills"][aria-pressed="true"] {
     background: var(--op-accent) !important;
     border-color: var(--op-accent) !important;
     color: #ffffff !important;
+}
+
+.stApp button[data-variant="pills"] p {
+    color: inherit !important;
+}
+
+.op-add-label {
+    height: 1.65rem;
+}
+
+.op-shortlist-choice {
+    background: var(--op-panel);
+    border: 1px solid var(--op-border);
+    border-radius: 2px;
+    color: var(--op-text);
+    min-height: 2.4rem;
+    padding: 0.55rem 0.7rem;
 }
 
 .stApp [data-testid="stSelectbox"] > div > div,

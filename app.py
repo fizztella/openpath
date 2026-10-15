@@ -515,20 +515,61 @@ with shortlist_tab:
         shortlist_choices = shortlist_choices[
             shortlist_choices["field_category"].isin(shortlist_fields)
         ]
-    existing_choices = st.session_state.get("shortlist_program_keys", [])
-    available_keys = shortlist_choices["program_key"].tolist()
-    available_keys.extend(key for key in existing_choices if key not in available_keys)
+    valid_program_keys = set(program_labels)
+    if "shortlist_program_keys" not in st.session_state:
+        saved_keys = st.query_params.get_all("shortlist")
+        st.session_state.shortlist_program_keys = [
+            key for key in saved_keys if key in valid_program_keys
+        ]
+    selected_program_keys = st.session_state.shortlist_program_keys
+    available_keys = [
+        key
+        for key in shortlist_choices["program_key"].tolist()
+        if key not in selected_program_keys
+    ]
 
-    selected_program_keys = st.multiselect(
-        t("Add programs to compare"),
-        options=available_keys,
-        format_func=lambda key: program_labels[key],
-        key="shortlist_program_keys",
-        placeholder=t("Choose one or more programs"),
-        select_all=False,
-        bind="query-params",
-        persist_state="session",
-    )
+    candidate_col, add_col = st.columns([5, 1])
+    with candidate_col:
+        shortlist_candidate = st.selectbox(
+            t("Find a program"),
+            options=available_keys,
+            index=None,
+            format_func=lambda key: program_labels[key],
+            placeholder=t("Choose a program"),
+            key="shortlist_candidate",
+        )
+    with add_col:
+        st.markdown("<div class='op-add-label'>&nbsp;</div>", unsafe_allow_html=True)
+        add_program = st.button(
+            t("Add"),
+            disabled=shortlist_candidate is None,
+            key="add_shortlist_program",
+            width="stretch",
+        )
+    if add_program and shortlist_candidate is not None:
+        selected_program_keys = [*selected_program_keys, shortlist_candidate]
+        st.session_state.shortlist_program_keys = selected_program_keys
+        st.query_params["shortlist"] = selected_program_keys
+        st.session_state.shortlist_candidate = None
+        st.rerun()
+
+    if selected_program_keys:
+        st.markdown(f"**{t('Selected for comparison')}**")
+        for program_key in selected_program_keys:
+            label_col, remove_col = st.columns([8, 1])
+            label_col.markdown(f"<div class='op-shortlist-choice'>{escape(program_labels[program_key])}</div>", unsafe_allow_html=True)
+            if remove_col.button(
+                t("Remove"), key=f"remove::{program_key}", width="stretch"
+            ):
+                selected_program_keys = [
+                    key for key in selected_program_keys if key != program_key
+                ]
+                st.session_state.shortlist_program_keys = selected_program_keys
+                if selected_program_keys:
+                    st.query_params["shortlist"] = selected_program_keys
+                elif "shortlist" in st.query_params:
+                    del st.query_params["shortlist"]
+                st.rerun()
     st.caption(
         t(
             "Use the country and field filters to narrow the list. Start typing to search by university or program name."
