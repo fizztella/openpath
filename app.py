@@ -3,6 +3,8 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from filters import filter_programs
+
 st.set_page_config(page_title="OpenPath", page_icon="🎓", layout="wide")
 
 st.title("OpenPath")
@@ -23,13 +25,23 @@ col3.metric("Countries", programs["country"].nunique())
 
 st.subheader("Your profile")
 ielts_score = st.slider("IELTS overall score", 0.0, 9.0, 6.0, 0.5)
+max_first_year_fees = st.number_input(
+    "Maximum first-year academic fees before scholarship (JPY)",
+    min_value=0,
+    max_value=5_000_000,
+    value=2_100_000,
+    step=100_000,
+)
 allow_standardized_test = st.checkbox(
     "Include programs that require an additional standardized academic test"
 )
 
-eligible = programs[programs["ielts_overall"] <= ielts_score].copy()
-if not allow_standardized_test:
-    eligible = eligible[eligible["standardized_test_required"] == "No"]
+eligible = filter_programs(
+    programs,
+    ielts_score=ielts_score,
+    allow_standardized_test=allow_standardized_test,
+    max_first_year_fees_jpy=max_first_year_fees,
+)
 
 st.subheader("Matching programs")
 if eligible.empty:
