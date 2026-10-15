@@ -12,9 +12,13 @@ def filter_programs(
     """Return programs that match the applicant's current profile."""
     programs = programs.copy()
     waiver_percent = programs["max_tuition_waiver_percent"].fillna(0)
+    fixed_scholarship = programs["max_fixed_scholarship_jpy"].fillna(0)
 
     if use_maximum_tuition_waiver:
-        tuition_reduction = programs["annual_tuition_jpy"] * waiver_percent / 100
+        percentage_reduction = programs["annual_tuition_jpy"] * waiver_percent / 100
+        tuition_reduction = pd.concat(
+            [percentage_reduction, fixed_scholarship], axis=1
+        ).max(axis=1)
     else:
         tuition_reduction = 0
 
@@ -22,8 +26,15 @@ def filter_programs(
         programs["first_year_academic_fees_jpy"] - tuition_reduction
     ).round().astype(int)
 
+    numeric_ielts_requirement = programs["ielts_requirement_type"].isin(
+        ["Minimum", "Target"]
+    )
+    passes_ielts = (~numeric_ielts_requirement) | (
+        programs["ielts_overall"] <= ielts_score
+    )
+
     eligible = programs[
-        (programs["ielts_overall"] <= ielts_score)
+        passes_ielts
         & (programs["estimated_first_year_fees_jpy"] <= max_first_year_fees_jpy)
     ].copy()
 

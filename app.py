@@ -69,7 +69,7 @@ else:
                 "first_year_academic_fees_jpy",
                 "max_tuition_waiver_percent",
                 "estimated_first_year_fees_jpy",
-                "application_deadline",
+                "application_deadline_final",
             ]
         ],
         hide_index=True,
@@ -88,7 +88,7 @@ else:
             "estimated_first_year_fees_jpy": st.column_config.NumberColumn(
                 "Estimated fees in this scenario", format="¥%d"
             ),
-            "application_deadline": st.column_config.DateColumn("Final deadline"),
+            "application_deadline_final": st.column_config.DateColumn("Final deadline"),
         },
     )
 
@@ -109,7 +109,15 @@ else:
                     f"{program['japanese_required_at_admission']}"
                 )
                 st.markdown(f"**Intake:** {program['intake']}")
-                st.markdown(f"**IELTS:** {program['ielts_overall']} — {program['ielts_note']}")
+                ielts_value = (
+                    program["ielts_overall"]
+                    if pd.notna(program["ielts_overall"])
+                    else "No numeric minimum published"
+                )
+                st.markdown(
+                    f"**IELTS ({program['ielts_requirement_type']}):** "
+                    f"{ielts_value} — {program['ielts_note']}"
+                )
                 st.markdown(
                     "**Additional academic test:** "
                     f"{program['standardized_test_required']}"
@@ -132,9 +140,17 @@ else:
                 waiver = program["max_tuition_waiver_percent"]
                 waiver_text = f"{int(waiver)}%" if pd.notna(waiver) else "Not published"
                 st.markdown(f"**Maximum published tuition waiver:** {waiver_text}")
+                fixed_award = int(program["max_fixed_scholarship_jpy"])
+                if fixed_award:
+                    st.markdown(f"**Maximum fixed scholarship:** ¥{fixed_award:,}")
                 st.write(program["scholarship_note"])
 
             st.markdown(f"**Important note:** {program['notes']}")
+            st.markdown(
+                "**Application window represented:** "
+                f"{program['application_open_date']} to "
+                f"{program['application_deadline_final']}"
+            )
             st.caption(f"Last verified: {program['last_verified']}")
 
             source_col1, source_col2, source_col3 = st.columns(3)

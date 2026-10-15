@@ -50,3 +50,23 @@ def test_field_filter_returns_only_selected_subjects():
 
     assert result["program"].tolist() == ["ICT Global All-English Program"]
 
+
+def test_program_without_published_ielts_minimum_is_not_incorrectly_excluded():
+    programs = load_programs().iloc[[0]].copy()
+    programs["ielts_requirement_type"] = "No published minimum"
+    programs["ielts_overall"] = pd.NA
+
+    result = filter_programs(programs, 0.0, True, 5_000_000, False)
+
+    assert len(result) == 1
+
+
+def test_fixed_scholarship_is_supported_in_best_case_scenario():
+    programs = load_programs().iloc[[0]].copy()
+    programs["max_tuition_waiver_percent"] = 0
+    programs["max_fixed_scholarship_jpy"] = 500_000
+
+    result = filter_programs(programs, 7.0, True, 5_000_000, True)
+
+    assert result.iloc[0]["estimated_first_year_fees_jpy"] == 1_396_000
+

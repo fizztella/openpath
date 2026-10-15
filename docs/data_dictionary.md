@@ -13,7 +13,10 @@ This document explains what every field in `data/programs.csv` means.
 | `language` | Primary language of instruction. |
 | `japanese_required_at_admission` | Whether Japanese proficiency is required when applying. |
 | `intake` | Intake represented by this record. Requirements may differ between intakes. |
-| `application_deadline` | Final published deadline in ISO format (`YYYY-MM-DD`). |
+| `application_open_date` | Opening date of the represented application window. |
+| `application_deadline_final` | Final published deadline in ISO format (`YYYY-MM-DD`). |
+| `english_test_required` | Whether proof of English proficiency is required. |
+| `ielts_requirement_type` | Whether the IELTS value is a minimum, target, absent, or not required. |
 | `ielts_overall` | Published overall IELTS requirement or target. |
 | `ielts_note` | Important conditions, such as minimum band scores. |
 | `standardized_test_required` | Whether a separate academic examination is required. |
@@ -22,6 +25,8 @@ This document explains what every field in `data/programs.csv` means.
 | `first_year_academic_fees_jpy` | Tuition and mandatory academic/institutional fees for year one. Housing is excluded. |
 | `scholarship_at_admission` | Whether a tuition scholarship can be awarded with admission. |
 | `max_tuition_waiver_percent` | Highest published tuition-waiver percentage. Blank means unknown or not applicable. |
+| `scholarship_value_type` | Whether aid is percentage-based, fixed, variable, or unavailable. |
+| `max_fixed_scholarship_jpy` | Highest fixed scholarship amount in JPY; zero if not applicable. |
 | `scholarship_note` | What the scholarship covers and important renewal conditions. |
 | `admissions_source` | Official source for entry requirements and deadlines. |
 | `fees_source` | Official source for tuition and mandatory fees. |
