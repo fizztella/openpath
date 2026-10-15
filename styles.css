@@ -1,0 +1,199 @@
+:root {
+    --op-bg: #0b0e12;
+    --op-panel: rgba(20, 25, 32, 0.88);
+    --op-panel-strong: #171d25;
+    --op-border: rgba(255, 255, 255, 0.09);
+    --op-border-warm: rgba(232, 166, 87, 0.38);
+    --op-text: #f4f1ea;
+    --op-muted: #a8adb7;
+    --op-amber: #e8a657;
+    --op-amber-soft: #f2c98f;
+    --op-green: #57c98b;
+    --op-red: #ec7777;
+}
+
+.stApp {
+    background:
+        radial-gradient(circle at 82% -10%, rgba(232, 166, 87, 0.13), transparent 31rem),
+        radial-gradient(circle at -12% 34%, rgba(81, 105, 129, 0.11), transparent 34rem),
+        var(--op-bg);
+    color: var(--op-text);
+}
+
+[data-testid="stHeader"] {
+    background: rgba(11, 14, 18, 0.76);
+    backdrop-filter: blur(14px);
+}
+
+.block-container {
+    max-width: 1380px;
+    padding-top: 2.3rem;
+    padding-bottom: 5rem;
+}
+
+.op-hero {
+    padding: 1.3rem 0 1rem;
+}
+
+.op-eyebrow {
+    color: var(--op-amber-soft);
+    font-size: 0.74rem;
+    font-weight: 750;
+    letter-spacing: 0.17em;
+    margin-bottom: 0.55rem;
+    text-transform: uppercase;
+}
+
+.op-hero .op-title {
+    color: var(--op-text) !important;
+    font-size: clamp(2.8rem, 7vw, 5.4rem) !important;
+    font-weight: 790;
+    letter-spacing: -0.065em;
+    line-height: 0.92;
+    margin: 0;
+}
+
+.op-hero .op-title span {
+    color: var(--op-amber) !important;
+}
+
+.op-subtitle {
+    color: var(--op-muted);
+    font-size: 1.05rem;
+    line-height: 1.65;
+    margin: 1rem 0 0;
+    max-width: 48rem;
+}
+
+h2, h3 {
+    color: var(--op-text) !important;
+    letter-spacing: -0.025em;
+}
+
+[data-testid="stCaptionContainer"] {
+    color: var(--op-muted);
+}
+
+[data-testid="stMetric"] {
+    background: linear-gradient(145deg, rgba(25, 31, 40, 0.92), rgba(17, 21, 27, 0.92));
+    border: 1px solid var(--op-border);
+    border-radius: 16px;
+    min-height: 112px;
+    padding: 1rem 1.15rem;
+    box-shadow: 0 14px 42px rgba(0, 0, 0, 0.16);
+}
+
+[data-testid="stMetricLabel"] {
+    color: var(--op-muted);
+}
+
+[data-testid="stMetricValue"] {
+    color: var(--op-text);
+    font-weight: 720;
+}
+
+.stTabs [data-baseweb="tab-list"],
+[data-testid="stTabs"] [role="tablist"] {
+    background: rgba(18, 23, 30, 0.84);
+    border: 1px solid var(--op-border);
+    border-radius: 14px;
+    gap: 0.35rem;
+    margin: 1.4rem 0 1.8rem;
+    padding: 0.35rem;
+}
+
+.stTabs [data-baseweb="tab"],
+[data-testid="stTabs"] [role="tab"] {
+    border-radius: 10px;
+    color: var(--op-muted);
+    font-weight: 650;
+    min-height: 44px;
+    padding: 0 1.15rem;
+}
+
+.stTabs [aria-selected="true"],
+[data-testid="stTabs"] [role="tab"][aria-selected="true"] {
+    background: rgba(232, 166, 87, 0.14);
+    color: var(--op-amber-soft) !important;
+}
+
+.stTabs [data-baseweb="tab-highlight"] {
+    background-color: var(--op-amber);
+}
+
+[data-testid="stSelectbox"] > div,
+[data-testid="stMultiSelect"] > div,
+[data-testid="stNumberInput"] > div {
+    border-radius: 12px;
+}
+
+[data-testid="stDataFrame"] {
+    border: 1px solid var(--op-border);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+[data-testid="stExpander"] {
+    background: var(--op-panel);
+    border: 1px solid var(--op-border) !important;
+    border-radius: 14px !important;
+    margin-bottom: 0.65rem;
+    overflow: hidden;
+}
+
+[data-testid="stExpander"]:hover {
+    border-color: var(--op-border-warm) !important;
+}
+
+.stButton > button,
+.stDownloadButton > button,
+[data-testid="stLinkButton"] a {
+    border: 1px solid var(--op-border-warm) !important;
+    border-radius: 11px !important;
+    font-weight: 700 !important;
+    transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.stButton > button:hover,
+.stDownloadButton > button:hover,
+[data-testid="stLinkButton"] a:hover {
+    background: rgba(232, 166, 87, 0.12) !important;
+    border-color: var(--op-amber) !important;
+    color: var(--op-amber-soft) !important;
+    transform: translateY(-1px);
+}
+
+[data-testid="stAlert"] {
+    border-radius: 13px;
+    border-width: 1px;
+}
+
+[data-testid="stProgress"] > div > div > div > div {
+    background: linear-gradient(90deg, #c7833e, var(--op-amber));
+}
+
+hr {
+    border-color: var(--op-border) !important;
+    margin: 2.4rem 0 !important;
+}
+
+@media (max-width: 700px) {
+    .block-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 1rem;
+    }
+
+    .op-title {
+        font-size: 3.1rem;
+    }
+
+    .op-subtitle {
+        font-size: 0.96rem;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        padding: 0 0.6rem;
+        font-size: 0.86rem;
+    }
+}

@@ -11,13 +11,17 @@ from timeline import build_application_timeline, next_timeline_event, timeline_c
 
 st.set_page_config(page_title="OpenPath", page_icon="🎓", layout="wide")
 
-st.title("OpenPath")
-language_name = st.selectbox(
-    "Interface language",
-    options=list(LANGUAGES),
-    index=0,
-    key="interface_language",
-)
+styles_path = Path(__file__).parent / "styles.css"
+st.markdown(f"<style>{styles_path.read_text()}</style>", unsafe_allow_html=True)
+
+hero_col, language_col = st.columns([4, 1])
+with language_col:
+    language_name = st.selectbox(
+        "Interface language",
+        options=list(LANGUAGES),
+        index=0,
+        key="interface_language",
+    )
 language_code = LANGUAGES[language_name]
 
 
@@ -25,7 +29,19 @@ def t(text):
     return translate(language_code, text)
 
 
-st.write(t("Find international degree programs that match your qualifications and budget."))
+with hero_col:
+    st.markdown(
+        f"""
+        <section class="op-hero">
+            <div class="op-eyebrow">Verified admissions intelligence</div>
+            <h1 class="op-title">Open<span>Path</span></h1>
+            <p class="op-subtitle">
+                {t("Find international degree programs that match your qualifications and budget.")}
+            </p>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
 
 data_path = Path(__file__).parent / "data" / "programs.csv"
 programs = pd.read_csv(data_path)
