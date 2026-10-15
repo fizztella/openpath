@@ -84,6 +84,56 @@ else:
         },
     )
 
+    st.subheader("Program details")
+    for _, program in eligible.iterrows():
+        expander_title = f"{program['university']} — {program['program']}"
+        with st.expander(expander_title):
+            details_col, cost_col = st.columns(2)
+
+            with details_col:
+                st.markdown(f"**Degree:** {program['degree']}")
+                st.markdown(f"**Location:** {program['city']}, {program['country']}")
+                st.markdown(f"**Language:** {program['language']}")
+                st.markdown(f"**Intake:** {program['intake']}")
+                st.markdown(f"**IELTS:** {program['ielts_overall']} — {program['ielts_note']}")
+                st.markdown(
+                    "**Additional academic test:** "
+                    f"{program['standardized_test_required']}"
+                )
+                st.write(program["accepted_tests"])
+
+            with cost_col:
+                st.markdown(
+                    "**Annual tuition:** "
+                    f"¥{int(program['annual_tuition_jpy']):,}"
+                )
+                st.markdown(
+                    "**First-year academic fees:** "
+                    f"¥{int(program['first_year_academic_fees_jpy']):,}"
+                )
+                st.markdown(
+                    "**Estimated fees in selected scenario:** "
+                    f"¥{int(program['estimated_first_year_fees_jpy']):,}"
+                )
+                waiver = program["max_tuition_waiver_percent"]
+                waiver_text = f"{int(waiver)}%" if pd.notna(waiver) else "Not published"
+                st.markdown(f"**Maximum published tuition waiver:** {waiver_text}")
+                st.write(program["scholarship_note"])
+
+            st.markdown(f"**Important note:** {program['notes']}")
+            st.caption(f"Last verified: {program['last_verified']}")
+
+            source_col1, source_col2, source_col3 = st.columns(3)
+            source_col1.link_button(
+                "Admissions source", program["admissions_source"], width="stretch"
+            )
+            source_col2.link_button(
+                "Fees source", program["fees_source"], width="stretch"
+            )
+            source_col3.link_button(
+                "Program source", program["program_source"], width="stretch"
+            )
+
 st.subheader("Sources and limitations")
 st.write(
     "OpenPath does not treat missing information as zero and does not predict scholarship "
