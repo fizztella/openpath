@@ -205,6 +205,22 @@ h2, h3 {
     border-color: var(--op-border-warm) !important;
 }
 
+div[data-baseweb="modal"] {
+    backdrop-filter: blur(7px);
+    background: rgba(5, 7, 10, 0.68);
+}
+
+[data-testid="stDialog"] > div {
+    background: var(--op-bg);
+    border: 1px solid var(--op-border);
+    border-radius: 10px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.48);
+}
+
+[data-testid="stDialog"] [data-testid="stMetric"] {
+    min-height: 88px;
+}
+
 .stButton > button,
 .stDownloadButton > button,
 [data-testid="stLinkButton"] a {

@@ -98,7 +98,8 @@ def render_program_details(program):
         fixed_award = int(program["max_fixed_scholarship_usd"])
         if fixed_award:
             st.markdown(f"**{t('Maximum fixed scholarship')}:** ${fixed_award:,}")
-        st.markdown(f"**{t('Aid model')}:** {t(str(program['aid_model']))}")
+        if pd.notna(program.get("aid_model")):
+            st.markdown(f"**{t('Aid model')}:** {t(str(program['aid_model']))}")
         st.markdown(
             f"**{t('Can include living costs')}:** {t(str(program['aid_covers_living_costs']))}"
         )
@@ -116,6 +117,22 @@ def render_program_details(program):
     source_col3.link_button(
         t("Program source"), program["program_source"], width="stretch"
     )
+
+
+@st.dialog(t("Program details"), width="large")
+def show_program_dialog(program):
+    st.markdown(f"## {program['university']}")
+    st.markdown(f"### {program['program']}")
+    summary_col, deadline_col = st.columns(2)
+    summary_col.metric(
+        t("Estimated fees"),
+        f"${int(program['estimated_first_year_fees_usd']):,}",
+    )
+    deadline = program["application_deadline_final"]
+    deadline_col.metric(
+        t("Deadline"), str(deadline) if pd.notna(deadline) else t("Not published")
+    )
+    render_program_details(program)
 
 
 with hero_col:
@@ -270,12 +287,30 @@ with program_search_tab:
                         deadline_text = (
                             str(deadline) if pd.notna(deadline) else t("Not published")
                         )
-                        title = f"{status_icons[program['eligibility_status']]} · {program['university']} — {program['program']}"
-                        with st.expander(title):
+                        with st.container(border=True):
                             st.markdown(
-                                f"**{t('Estimated fees')}:** ${int(program['estimated_first_year_fees_usd']):,}  \n**{t('Deadline')}:** {deadline_text}"
+                                f"<div class='op-card-status'>{status_icons[program['eligibility_status']]}</div>",
+                                unsafe_allow_html=True,
                             )
-                            render_program_details(program)
+                            st.markdown(f"### {program['university']}")
+                            st.markdown(f"**{program['program']}**")
+                            st.caption(
+                                f"{t(str(program['country']))} · "
+                                f"{t(str(program['field_category']))} · {program['intake']}"
+                            )
+                            fee_col, deadline_col = st.columns(2)
+                            fee_col.metric(
+                                t("Estimated fees"),
+                                f"${int(program['estimated_first_year_fees_usd']):,}",
+                            )
+                            deadline_col.metric(t("Deadline"), deadline_text)
+                            st.caption(t(str(program["eligibility_summary"])))
+                            if st.button(
+                                t("View details"),
+                                key=f"details::{program['university']}::{program['program']}",
+                                width="stretch",
+                            ):
+                                show_program_dialog(program)
         else:
             st.dataframe(
                 programs_to_show[
@@ -306,11 +341,17 @@ with program_search_tab:
                 },
             )
 
-            with st.expander(t("Program details")):
-                for _, program in programs_to_show.iterrows():
-                    st.markdown(f"### {program['university']} — {program['program']}")
-                    render_program_details(program)
-                    st.divider()
+            detail_options = programs_to_show.index.tolist()
+            selected_detail = st.selectbox(
+                t("Select a program to view details"),
+                options=detail_options,
+                format_func=lambda index: (
+                    f"{programs_to_show.loc[index, 'university']} — "
+                    f"{programs_to_show.loc[index, 'program']}"
+                ),
+            )
+            if st.button(t("View details"), key="table_details", width="stretch"):
+                show_program_dialog(programs_to_show.loc[selected_detail])
 
 with shortlist_tab:
     st.divider()

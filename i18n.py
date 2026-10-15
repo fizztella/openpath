@@ -717,6 +717,8 @@ for _language, _values in COMMON_VALUES.items():
 
 TRANSLATIONS["ru"].update(
     {
+        "View details": "Подробнее",
+        "Select a program to view details": "Выберите программу для просмотра",
         "Yes": "Да",
         "No": "Нет",
         "Japan": "Япония",
@@ -731,6 +733,31 @@ TRANSLATIONS["ru"].update(
         "Confirm the current intake, deadline, and document list at the official source.": "Сверьте актуальный набор, дедлайн и список документов с официальным источником.",
         "Check the institution's rules for transcripts, certificates, translations, and delivery method.": "Проверьте правила вуза для выписок, аттестатов, переводов и способа отправки.",
         "Submit before the OpenPath target date and verify that all materials were received.": "Подайте заявку до целевой даты OpenPath и убедитесь, что все материалы получены.",
+    }
+)
+
+TRANSLATIONS["uk"].update(
+    {
+        "View details": "Докладніше",
+        "Select a program to view details": "Оберіть програму для перегляду",
+    }
+)
+TRANSLATIONS["es"].update(
+    {
+        "View details": "Ver detalles",
+        "Select a program to view details": "Selecciona un programa para ver los detalles",
+    }
+)
+TRANSLATIONS["de"].update(
+    {
+        "View details": "Details anzeigen",
+        "Select a program to view details": "Programm für Details auswählen",
+    }
+)
+TRANSLATIONS["ja"].update(
+    {
+        "View details": "詳細を見る",
+        "Select a program to view details": "詳細を表示するプログラムを選択",
     }
 )
 
