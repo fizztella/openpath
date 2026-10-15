@@ -1,3 +1,4 @@
+from html import escape
 from pathlib import Path
 
 import pandas as pd
@@ -6,6 +7,7 @@ import streamlit as st
 from checklist import build_application_checklist, checklist_progress
 from filters import evaluate_programs
 from i18n import LANGUAGES, translate
+from presentation import paginate_results
 from shortlist import add_program_keys, build_shortlist, next_deadline, shortlist_csv
 from timeline import build_application_timeline, next_timeline_event, timeline_csv
 
@@ -131,55 +133,94 @@ with program_search_tab:
             "eligibility_status"
         ].map(status_icons)
 
-        st.dataframe(
-            programs_to_show[
-                [
-                    "status_display",
-                    "university",
-                    "program",
-                    "country",
-                    "field_category",
-                    "intake",
-                    "ielts_overall",
-                    "standardized_test_required",
-                    "first_year_academic_fees_usd",
-                    "native_currency",
-                    "first_year_academic_fees_native",
-                    "max_tuition_waiver_percent",
-                    "estimated_first_year_fees_usd",
-                    "eligibility_summary",
-                    "application_deadline_final",
-                ]
-            ],
-            hide_index=True,
-            width="stretch",
-            column_config={
-                "status_display": "Result",
-                "university": "University",
-                "program": "Program",
-                "country": "Country",
-                "field_category": "Field",
-                "intake": "Intake",
-                "ielts_overall": "IELTS",
-                "standardized_test_required": "Extra test",
-                "first_year_academic_fees_usd": st.column_config.NumberColumn(
-                    "First-year academic fees (USD)", format="$%d"
-                ),
-                "native_currency": "Local currency",
-                "first_year_academic_fees_native": st.column_config.NumberColumn(
-                    "Published local fees", format="%.2f"
-                ),
-                "max_tuition_waiver_percent": "Maximum tuition waiver (%)",
-                "estimated_first_year_fees_usd": st.column_config.NumberColumn(
-                    "Estimated fees in this scenario (USD)", format="$%d"
-                ),
-                "eligibility_summary": "Why",
-                "application_deadline_final": st.column_config.DateColumn("Final deadline"),
-            },
+        view_mode = st.radio(
+            t("Results view"),
+            options=["Cards", "Compact table"],
+            format_func=t,
+            horizontal=True,
         )
+        details_programs = programs_to_show
+
+        if view_mode == "Cards":
+            _, _, total_pages = paginate_results(programs_to_show, 1)
+            selected_page = st.selectbox(
+                t("Page"),
+                options=list(range(1, total_pages + 1)),
+                format_func=lambda page: f"{page} / {total_pages}",
+            )
+            page_programs, _, _ = paginate_results(
+                programs_to_show, selected_page
+            )
+            details_programs = page_programs
+            for row_start in range(0, len(page_programs), 2):
+                card_columns = st.columns(2)
+                for column, (_, program) in zip(
+                    card_columns,
+                    page_programs.iloc[row_start : row_start + 2].iterrows(),
+                ):
+                    with column:
+                        deadline = program["application_deadline_final"]
+                        deadline_text = (
+                            str(deadline) if pd.notna(deadline) else t("Not published")
+                        )
+                        st.markdown(
+                            f"""
+                            <article class="op-result-card">
+                                <div class="op-card-status">
+                                    {escape(status_icons[program['eligibility_status']])}
+                                </div>
+                                <h3>{escape(str(program['university']))}</h3>
+                                <div class="op-card-program">
+                                    {escape(str(program['program']))}
+                                </div>
+                                <div class="op-card-meta">
+                                    {escape(str(program['country']))} ·
+                                    {escape(str(program['field_category']))} ·
+                                    {escape(str(program['intake']))}
+                                </div>
+                                <div class="op-card-footer">
+                                    <div><span>{escape(t('Estimated fees'))}</span>
+                                    <strong>${int(program['estimated_first_year_fees_usd']):,}</strong></div>
+                                    <div><span>{escape(t('Deadline'))}</span>
+                                    <strong>{escape(deadline_text)}</strong></div>
+                                </div>
+                                <p>{escape(str(program['eligibility_summary']))}</p>
+                            </article>
+                            """,
+                            unsafe_allow_html=True,
+                        )
+        else:
+            st.dataframe(
+                programs_to_show[
+                    [
+                        "status_display",
+                        "university",
+                        "program",
+                        "country",
+                        "estimated_first_year_fees_usd",
+                        "aid_model",
+                        "application_deadline_final",
+                    ]
+                ],
+                hide_index=True,
+                width="stretch",
+                column_config={
+                    "status_display": t("Result"),
+                    "university": t("University"),
+                    "program": t("Program"),
+                    "country": t("Country"),
+                    "estimated_first_year_fees_usd": st.column_config.NumberColumn(
+                        t("Estimated fees"), format="$%d"
+                    ),
+                    "aid_model": t("Aid model"),
+                    "application_deadline_final": st.column_config.DateColumn(
+                        t("Deadline")
+                    ),
+                },
+            )
 
         st.subheader(t("Program details"))
-        for _, program in programs_to_show.iterrows():
+        for _, program in details_programs.iterrows():
             expander_title = (
                 f"{status_icons[program['eligibility_status']]} · "
                 f"{program['university']} — {program['program']}"
@@ -472,7 +513,9 @@ with shortlist_tab:
 
 st.subheader(t("Sources and limitations"))
 st.write(
-    "OpenPath does not treat missing information as zero and does not predict scholarship "
-    "probability without reliable historical decision data."
+    t(
+        "OpenPath does not treat missing information as zero and does not predict "
+        "scholarship probability without reliable historical decision data."
+    )
 )
 

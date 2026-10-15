@@ -12,3 +12,13 @@ def test_known_text_is_translated():
 
 def test_missing_translation_falls_back_to_english():
     assert translate("de", "Official university name") == "Official university name"
+
+
+def test_sources_limitation_is_translated_in_every_non_english_language():
+    text = (
+        "OpenPath does not treat missing information as zero and does not predict "
+        "scholarship probability without reliable historical decision data."
+    )
+
+    for language_code in ("ru", "uk", "es", "de", "ja"):
+        assert translate(language_code, text) != text
