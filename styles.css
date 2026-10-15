@@ -139,6 +139,7 @@ h2, h3 {
     border: 1px solid var(--op-border) !important;
     border-radius: 2px !important;
     color: var(--op-text) !important;
+    min-height: 52px;
 }
 
 .stApp [data-baseweb="select"] > div,
@@ -149,6 +150,24 @@ h2, h3 {
     border-color: var(--op-border) !important;
     border-radius: 1px !important;
     color: var(--op-text) !important;
+    min-height: 50px;
+}
+
+.stApp [data-baseweb="tag"],
+.stApp [data-baseweb="tag"] div {
+    background-color: var(--op-accent) !important;
+    color: #ffffff !important;
+    min-height: 0;
+}
+
+.stApp [data-baseweb="tag"] button,
+.stApp [data-baseweb="tag"] [role="button"] {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+    min-height: 0;
+    padding: 0 !important;
 }
 
 .stApp input::placeholder,
@@ -175,6 +194,16 @@ h2, h3 {
     background-color: var(--op-panel) !important;
     border-color: var(--op-border) !important;
     border-radius: 0 !important;
+    color: var(--op-text) !important;
+}
+
+.stApp button[aria-label="Clear all"] {
+    display: none !important;
+}
+
+.stApp [data-testid="stNumberInput"] button {
+    background-color: var(--op-panel) !important;
+    border-color: var(--op-border) !important;
     color: var(--op-text) !important;
 }
 

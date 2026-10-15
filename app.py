@@ -54,6 +54,28 @@ st.markdown(
         --primary-color: #3976c3;
     }}
     [data-testid="stHeader"] {{ background: {theme["header"]}; }}
+    [data-testid="stDialog"],
+    [data-testid="stDialog"] p,
+    [data-testid="stDialog"] span,
+    [data-testid="stDialog"] strong,
+    [data-testid="stDialog"] label,
+    [data-testid="stDialog"] h1,
+    [data-testid="stDialog"] h2,
+    [data-testid="stDialog"] h3 {{
+        color: {theme["text"]} !important;
+    }}
+    [data-testid="stDialog"] [data-testid="stCaptionContainer"] {{
+        color: {theme["muted"]} !important;
+    }}
+    [data-baseweb="popover"],
+    [role="listbox"],
+    [role="option"] {{
+        background-color: {theme["panel"]} !important;
+        color: {theme["text"]} !important;
+    }}
+    [role="option"]:hover {{
+        background-color: {theme["panel_strong"]} !important;
+    }}
     </style>
     """,
     unsafe_allow_html=True,
