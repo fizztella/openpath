@@ -13,6 +13,7 @@ The project is currently in its first development stage. The prototype compares 
 - Distinguish merit scholarships, need-based aid, and tuition waivers.
 - Classify every result as Eligible, Conditional, or Not eligible and explain why.
 - Build a personal shortlist, compare selected programs, and export it as CSV.
+- Generate an application timeline that separates official dates from planning milestones.
 - Link every important value to an official source.
 - Display when each record was last verified.
 - Explain missing or uncertain data instead of inventing values.

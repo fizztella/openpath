@@ -5,6 +5,7 @@ import streamlit as st
 
 from filters import evaluate_programs
 from shortlist import add_program_keys, build_shortlist, next_deadline, shortlist_csv
+from timeline import build_application_timeline, next_timeline_event, timeline_csv
 
 st.set_page_config(page_title="OpenPath", page_icon="🎓", layout="wide")
 
@@ -323,6 +324,64 @@ else:
         "Download shortlist as CSV",
         data=shortlist_csv(shortlist),
         file_name="openpath_shortlist.csv",
+        mime="text/csv",
+        width="stretch",
+    )
+
+    st.subheader("Application timeline")
+    st.caption(
+        "Official university dates and OpenPath planning milestones are labelled "
+        "separately. Planning dates are recommendations, not additional deadlines."
+    )
+    timeline = build_application_timeline(shortlist)
+    upcoming_only = st.checkbox("Show upcoming events only", value=True)
+    timeline_to_show = timeline.copy()
+    if upcoming_only:
+        timeline_to_show = timeline_to_show[timeline_to_show["days_remaining"] >= 0]
+
+    next_event = next_timeline_event(timeline)
+    if next_event is not None:
+        st.info(
+            f"Next action: {next_event['event']} for {next_event['university']} "
+            f"on {next_event['event_date']:%Y-%m-%d} ({next_event['timing']})."
+        )
+    else:
+        st.warning("There are no upcoming dated events in the current shortlist.")
+
+    if timeline_to_show.empty:
+        st.warning("No timeline events match the current view.")
+    else:
+        st.dataframe(
+            timeline_to_show[
+                [
+                    "event_date",
+                    "timing",
+                    "university",
+                    "program",
+                    "event",
+                    "date_type",
+                    "note",
+                    "source",
+                ]
+            ],
+            hide_index=True,
+            width="stretch",
+            column_config={
+                "event_date": st.column_config.DateColumn("Date"),
+                "timing": "Timing",
+                "university": "University",
+                "program": "Program",
+                "event": "Action",
+                "date_type": "Date type",
+                "note": "Details",
+                "source": st.column_config.LinkColumn("Official source"),
+            },
+        )
+
+    st.download_button(
+        "Download application timeline as CSV",
+        data=timeline_csv(timeline),
+        file_name="openpath_application_timeline.csv",
         mime="text/csv",
         width="stretch",
     )
