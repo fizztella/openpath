@@ -11,7 +11,7 @@ This document explains what every field in `data/programs.csv` means.
 | `degree` | Degree awarded after successful completion. |
 | `duration_years` | Standard full-time duration of the degree. |
 | `language` | Primary language of instruction. |
-| `japanese_required_at_admission` | Whether Japanese proficiency is required when applying. |
+| `local_language_required_at_admission` | Whether a local language other than the program's language of instruction is required when applying. |
 | `intake` | Intake represented by this record. Requirements may differ between intakes. |
 | `application_open_date` | Opening date of the represented application window. |
 | `application_deadline_final` | Final published deadline in ISO format (`YYYY-MM-DD`). |
@@ -21,12 +21,14 @@ This document explains what every field in `data/programs.csv` means.
 | `ielts_note` | Important conditions, such as minimum band scores. |
 | `standardized_test_required` | Whether a separate academic examination is required. |
 | `accepted_tests` | Accepted, optional, or required academic examinations. |
-| `annual_tuition_jpy` | Published annual tuition before scholarships. |
-| `first_year_academic_fees_jpy` | Tuition and mandatory academic/institutional fees for year one. Housing is excluded. |
+| `annual_tuition_usd` | Annual tuition normalized to USD for cross-country comparison. |
+| `first_year_academic_fees_usd` | Tuition and mandatory academic/institutional fees for year one, normalized to USD. Housing is excluded. |
 | `scholarship_at_admission` | Whether a tuition scholarship can be awarded with admission. |
 | `max_tuition_waiver_percent` | Highest published tuition-waiver percentage. Blank means unknown or not applicable. |
 | `scholarship_value_type` | Whether aid is percentage-based, fixed, variable, or unavailable. |
-| `max_fixed_scholarship_jpy` | Highest fixed scholarship amount in JPY; zero if not applicable. |
+| `max_fixed_scholarship_usd` | Highest published fixed annual scholarship normalized to USD; zero if not applicable. |
+| `aid_model` | Main aid mechanism, such as merit scholarship, need-based aid, or tuition waiver. |
+| `aid_covers_living_costs` | Whether the published aid can cover housing, food, or other living costs. |
 | `scholarship_note` | What the scholarship covers and important renewal conditions. |
 | `admissions_source` | Official source for entry requirements and deadlines. |
 | `fees_source` | Official source for tuition and mandatory fees. |
@@ -37,7 +39,7 @@ This document explains what every field in `data/programs.csv` means.
 | `native_currency` | Currency used by the institution when publishing its fees. |
 | `annual_tuition_native` | Annual tuition in the institution's published currency. |
 | `first_year_academic_fees_native` | First-year academic fees in the published currency. |
-| `jpy_per_currency_unit` | Exchange rate used to normalize the native fee into JPY. |
+| `usd_per_currency_unit` | Exchange rate used to normalize one unit of native currency into USD. |
 | `exchange_rate_date` | Date of the exchange rate used for comparison. |
 
 ## Data principles

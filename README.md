@@ -4,12 +4,13 @@ OpenPath helps international applicants compare degree programs using admission 
 
 ## Project status
 
-The project is currently in its first development stage. The prototype compares undergraduate programs in Japan and Austria using language, field, country, test, and budget filters.
+The project is currently in its first development stage. The prototype compares undergraduate programs in Japan, Austria, and the United States using language, field, country, test, and budget filters.
 
 ## Planned features
 
 - Filter programs by country, subject, IELTS score, SAT requirement, and budget.
-- Compare tuition and estimated first-year costs.
+- Compare tuition and estimated first-year costs in USD while preserving each university's published local currency.
+- Distinguish merit scholarships, need-based aid, and tuition waivers.
 - Link every important value to an official source.
 - Display when each record was last verified.
 - Explain missing or uncertain data instead of inventing values.

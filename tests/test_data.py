@@ -18,18 +18,18 @@ def test_program_data_has_required_columns():
         "program",
         "field_category",
         "duration_years",
-        "japanese_required_at_admission",
+        "local_language_required_at_admission",
         "ielts_overall",
-        "first_year_academic_fees_jpy",
+        "first_year_academic_fees_usd",
         "application_open_date",
         "application_deadline_final",
         "ielts_requirement_type",
         "scholarship_value_type",
-        "max_fixed_scholarship_jpy",
+        "max_fixed_scholarship_usd",
         "native_currency",
         "annual_tuition_native",
         "first_year_academic_fees_native",
-        "jpy_per_currency_unit",
+        "usd_per_currency_unit",
         "exchange_rate_date",
         "admissions_source",
         "last_verified",
@@ -38,14 +38,14 @@ def test_program_data_has_required_columns():
     assert required_columns.issubset(programs.columns)
 
 
-def test_non_jpy_records_keep_native_fees_and_exchange_rate():
+def test_records_keep_native_fees_and_exchange_rate():
     programs = pd.read_csv(DATA_PATH)
     converted = programs[programs["native_currency"].notna()]
 
     assert not converted.empty
     assert converted["annual_tuition_native"].notna().all()
     assert converted["first_year_academic_fees_native"].notna().all()
-    assert converted["jpy_per_currency_unit"].gt(0).all()
+    assert converted["usd_per_currency_unit"].gt(0).all()
     assert converted["exchange_rate_date"].notna().all()
 
 
@@ -70,4 +70,13 @@ def test_numeric_ielts_requirements_have_scores():
     )
 
     assert programs.loc[numeric_requirements, "ielts_overall"].notna().all()
+
+
+def test_us_block_contains_multiple_financial_aid_models():
+    programs = pd.read_csv(DATA_PATH)
+    us_programs = programs[programs["country"] == "United States"]
+
+    assert len(us_programs) >= 5
+    assert us_programs["aid_model"].nunique() >= 2
+    assert (us_programs["native_currency"] == "USD").all()
 

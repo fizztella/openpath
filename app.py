@@ -36,11 +36,11 @@ selected_fields = st.multiselect(
 )
 ielts_score = st.slider("IELTS overall score", 0.0, 9.0, 6.0, 0.5)
 max_first_year_fees = st.number_input(
-    "Maximum first-year academic fees (JPY)",
+    "Maximum first-year academic fees (USD)",
     min_value=0,
-    max_value=5_000_000,
-    value=2_100_000,
-    step=100_000,
+    max_value=100_000,
+    value=20_000,
+    step=1_000,
 )
 use_maximum_tuition_waiver = st.checkbox(
     "Use the maximum published tuition waiver (best-case scenario, not a prediction)"
@@ -53,7 +53,7 @@ eligible = filter_programs(
     programs,
     ielts_score=ielts_score,
     allow_standardized_test=allow_standardized_test,
-    max_first_year_fees_jpy=max_first_year_fees,
+    max_first_year_fees_usd=max_first_year_fees,
     use_maximum_tuition_waiver=use_maximum_tuition_waiver,
     selected_fields=selected_fields,
     selected_countries=selected_countries,
@@ -73,9 +73,11 @@ else:
                 "intake",
                 "ielts_overall",
                 "standardized_test_required",
-                "first_year_academic_fees_jpy",
+                "first_year_academic_fees_usd",
+                "native_currency",
+                "first_year_academic_fees_native",
                 "max_tuition_waiver_percent",
-                "estimated_first_year_fees_jpy",
+                "estimated_first_year_fees_usd",
                 "application_deadline_final",
             ]
         ],
@@ -89,12 +91,16 @@ else:
             "intake": "Intake",
             "ielts_overall": "IELTS",
             "standardized_test_required": "Extra test",
-            "first_year_academic_fees_jpy": st.column_config.NumberColumn(
-                "First-year academic fees", format="¥%d"
+            "first_year_academic_fees_usd": st.column_config.NumberColumn(
+                "First-year academic fees (USD)", format="$%d"
+            ),
+            "native_currency": "Local currency",
+            "first_year_academic_fees_native": st.column_config.NumberColumn(
+                "Published local fees", format="%.2f"
             ),
             "max_tuition_waiver_percent": "Maximum tuition waiver (%)",
-            "estimated_first_year_fees_jpy": st.column_config.NumberColumn(
-                "Estimated fees in this scenario", format="¥%d"
+            "estimated_first_year_fees_usd": st.column_config.NumberColumn(
+                "Estimated fees in this scenario (USD)", format="$%d"
             ),
             "application_deadline_final": st.column_config.DateColumn("Final deadline"),
         },
@@ -113,8 +119,8 @@ else:
                 st.markdown(f"**Location:** {program['city']}, {program['country']}")
                 st.markdown(f"**Language:** {program['language']}")
                 st.markdown(
-                    "**Japanese required at admission:** "
-                    f"{program['japanese_required_at_admission']}"
+                    "**Local language required at admission:** "
+                    f"{program['local_language_required_at_admission']}"
                 )
                 st.markdown(f"**Intake:** {program['intake']}")
                 ielts_value = (
@@ -145,24 +151,31 @@ else:
                         "**Published first-year academic fees:** "
                         f"{native_currency} {native_first_year:,.2f}"
                     )
-                st.markdown(
-                    "**Annual tuition (JPY comparison):** "
-                    f"¥{int(program['annual_tuition_jpy']):,}"
-                )
-                st.markdown(
-                    "**First-year academic fees (JPY comparison):** "
-                    f"¥{int(program['first_year_academic_fees_jpy']):,}"
-                )
+                if program.get("native_currency") != "USD":
+                    st.markdown(
+                        "**Annual tuition (USD comparison):** "
+                        f"${int(program['annual_tuition_usd']):,}"
+                    )
+                    st.markdown(
+                        "**First-year academic fees (USD comparison):** "
+                        f"${int(program['first_year_academic_fees_usd']):,}"
+                    )
                 st.markdown(
                     "**Estimated fees in selected scenario:** "
-                    f"¥{int(program['estimated_first_year_fees_jpy']):,}"
+                    f"${int(program['estimated_first_year_fees_usd']):,}"
                 )
                 waiver = program["max_tuition_waiver_percent"]
                 waiver_text = f"{int(waiver)}%" if pd.notna(waiver) else "Not published"
                 st.markdown(f"**Maximum published tuition waiver:** {waiver_text}")
-                fixed_award = int(program["max_fixed_scholarship_jpy"])
+                fixed_award = int(program["max_fixed_scholarship_usd"])
                 if fixed_award:
-                    st.markdown(f"**Maximum fixed scholarship:** ¥{fixed_award:,}")
+                    st.markdown(f"**Maximum fixed scholarship:** ${fixed_award:,}")
+                aid_model = program.get("aid_model")
+                if pd.notna(aid_model):
+                    st.markdown(f"**Aid model:** {aid_model}")
+                living_costs = program.get("aid_covers_living_costs")
+                if pd.notna(living_costs):
+                    st.markdown(f"**Can include living costs:** {living_costs}")
                 st.write(program["scholarship_note"])
 
             st.markdown(f"**Important note:** {program['notes']}")
@@ -172,6 +185,13 @@ else:
                 f"{program['application_deadline_final']}"
             )
             st.caption(f"Last verified: {program['last_verified']}")
+            if pd.notna(program.get("exchange_rate_date")):
+                st.caption(
+                    "USD comparison rate: "
+                    f"1 {program['native_currency']} = "
+                    f"{program['usd_per_currency_unit']} USD "
+                    f"({program['exchange_rate_date']})"
+                )
 
             source_col1, source_col2, source_col3 = st.columns(3)
             source_col1.link_button(
