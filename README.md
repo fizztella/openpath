@@ -27,6 +27,8 @@ Every record stores separate official sources for admissions, fees, and the acad
 
 See the [data dictionary](docs/data_dictionary.md) for definitions and collection rules.
 
+The first usability study and the changes made from participant feedback are documented in the [user testing report](USER_TESTING.md).
+
 ## Technology
 
 - Python
