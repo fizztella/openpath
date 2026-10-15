@@ -12,6 +12,7 @@ The project is currently in its first development stage. The prototype compares 
 - Compare tuition and estimated first-year costs in USD while preserving each university's published local currency.
 - Distinguish merit scholarships, need-based aid, and tuition waivers.
 - Classify every result as Eligible, Conditional, or Not eligible and explain why.
+- Build a personal shortlist, compare selected programs, and export it as CSV.
 - Link every important value to an official source.
 - Display when each record was last verified.
 - Explain missing or uncertain data instead of inventing values.

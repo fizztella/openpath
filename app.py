@@ -4,6 +4,7 @@ import pandas as pd
 import streamlit as st
 
 from filters import evaluate_programs
+from shortlist import add_program_keys, build_shortlist, next_deadline, shortlist_csv
 
 st.set_page_config(page_title="OpenPath", page_icon="🎓", layout="wide")
 
@@ -49,15 +50,18 @@ allow_standardized_test = st.checkbox(
     "I can complete an additional standardized academic test"
 )
 
-evaluated = evaluate_programs(
+all_evaluated = evaluate_programs(
     programs,
     ielts_score=ielts_score,
     allow_standardized_test=allow_standardized_test,
     max_first_year_fees_usd=max_first_year_fees,
     use_maximum_tuition_waiver=use_maximum_tuition_waiver,
-    selected_fields=selected_fields,
-    selected_countries=selected_countries,
 )
+evaluated = all_evaluated.copy()
+if selected_fields:
+    evaluated = evaluated[evaluated["field_category"].isin(selected_fields)]
+if selected_countries:
+    evaluated = evaluated[evaluated["country"].isin(selected_countries)]
 
 st.subheader("Eligibility results")
 if evaluated.empty:
@@ -245,6 +249,83 @@ else:
             source_col3.link_button(
                 "Program source", program["program_source"], width="stretch"
             )
+
+st.divider()
+st.subheader("Your shortlist")
+keyed_programs = add_program_keys(all_evaluated)
+program_labels = keyed_programs.set_index("program_key").apply(
+    lambda row: f"{row['university']} — {row['program']} ({row['country']})", axis=1
+).to_dict()
+selected_program_keys = st.multiselect(
+    "Add programs to compare",
+    options=keyed_programs["program_key"].tolist(),
+    format_func=lambda key: program_labels[key],
+    key="shortlist_program_keys",
+    placeholder="Choose one or more programs",
+)
+
+shortlist = build_shortlist(all_evaluated, selected_program_keys)
+if shortlist.empty:
+    st.info("Select programs above to build a personal comparison list.")
+else:
+    upcoming_deadline = next_deadline(shortlist)
+    shortlist_col1, shortlist_col2, shortlist_col3 = st.columns(3)
+    shortlist_col1.metric("Selected programs", len(shortlist))
+    shortlist_col2.metric("Countries", shortlist["country"].nunique())
+    shortlist_col3.metric(
+        "Next deadline",
+        upcoming_deadline.strftime("%Y-%m-%d")
+        if upcoming_deadline is not None
+        else "No upcoming date",
+    )
+
+    shortlist_display = shortlist.copy()
+    shortlist_display["status_display"] = shortlist_display[
+        "eligibility_status"
+    ].map(
+        {
+            "Eligible": "🟢 Eligible",
+            "Conditional": "🟡 Conditional",
+            "Not eligible": "🔴 Not eligible",
+        }
+    )
+    st.dataframe(
+        shortlist_display[
+            [
+                "status_display",
+                "university",
+                "program",
+                "country",
+                "estimated_first_year_fees_usd",
+                "aid_model",
+                "aid_covers_living_costs",
+                "eligibility_summary",
+                "application_deadline_final",
+            ]
+        ],
+        hide_index=True,
+        width="stretch",
+        column_config={
+            "status_display": "Result",
+            "university": "University",
+            "program": "Program",
+            "country": "Country",
+            "estimated_first_year_fees_usd": st.column_config.NumberColumn(
+                "Estimated first-year fees", format="$%d"
+            ),
+            "aid_model": "Aid model",
+            "aid_covers_living_costs": "Living costs",
+            "eligibility_summary": "Remaining issue",
+            "application_deadline_final": st.column_config.DateColumn("Deadline"),
+        },
+    )
+    st.download_button(
+        "Download shortlist as CSV",
+        data=shortlist_csv(shortlist),
+        file_name="openpath_shortlist.csv",
+        mime="text/csv",
+        width="stretch",
+    )
 
 st.subheader("Sources and limitations")
 st.write(
