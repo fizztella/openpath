@@ -22,3 +22,23 @@ def test_sources_limitation_is_translated_in_every_non_english_language():
 
     for language_code in ("ru", "uk", "es", "de", "ja"):
         assert translate(language_code, text) != text
+
+
+def test_new_filter_controls_are_localized():
+    for language_code in ("ru", "uk", "es", "de", "ja"):
+        assert translate(language_code, "Reset filters") != "Reset filters"
+        assert (
+            translate(language_code, "Not applicable — OpenPath recommendation")
+            != "Not applicable — OpenPath recommendation"
+        )
+
+
+def test_reported_ukrainian_program_notes_are_localized():
+    notes = [
+        "Standardized academic scores are accepted when applicable to the applicant's education system but are not a universal extra-test requirement",
+        "30%, 50%, 65%, 80%, or 100% tuition reduction for the standard study period; renewal is reviewed each semester",
+        "Application dates shown are the full published range for the general countries-and-regions schedule",
+    ]
+
+    for note in notes:
+        assert translate("uk", note) != note

@@ -1,3 +1,4 @@
+from html import escape
 from pathlib import Path
 
 import pandas as pd
@@ -125,6 +126,40 @@ def timing_text(days):
     return t(key).format(days=days)
 
 
+def render_data_table(rows, columns):
+    """Render a small theme-aware table without Streamlit's fixed canvas theme."""
+    header = "".join(f"<th>{escape(str(label))}</th>" for _, label in columns)
+    body = []
+    for row in rows:
+        cells = []
+        for key, _ in columns:
+            value = row.get(key, "")
+            if key == "source" and str(value).startswith(("https://", "http://")):
+                content = (
+                    f'<a href="{escape(str(value), quote=True)}" target="_blank" '
+                    f'rel="noopener noreferrer">{escape(t("Official source"))}</a>'
+                )
+            else:
+                content = escape(str(value))
+            cells.append(f"<td>{content}</td>")
+        body.append(f"<tr>{''.join(cells)}</tr>")
+    st.markdown(
+        f'<div class="op-table-wrap"><table class="op-table"><thead><tr>{header}</tr>'
+        f"</thead><tbody>{''.join(body)}</tbody></table></div>",
+        unsafe_allow_html=True,
+    )
+
+
+def reset_program_filters():
+    st.session_state.program_countries = []
+    st.session_state.program_fields = []
+    st.session_state.result_statuses = ["Eligible", "Conditional", "Not eligible"]
+    st.session_state.ielts_score = 6.0
+    st.session_state.max_first_year_fees = 20_000
+    st.session_state.use_maximum_tuition_waiver = False
+    st.session_state.allow_standardized_test = False
+
+
 def render_program_details(program):
     status = program["eligibility_status"]
     message = t(str(program["eligibility_summary"]))
@@ -153,11 +188,11 @@ def render_program_details(program):
             if pd.notna(program["ielts_overall"])
             else t("Not published")
         )
-        st.markdown(f"**IELTS:** {ielts_value} — {program['ielts_note']}")
+        st.markdown(f"**IELTS:** {ielts_value} — {t(str(program['ielts_note']))}")
         st.markdown(
             f"**{t('Additional academic test')}:** {t(str(program['standardized_test_required']))}"
         )
-        st.caption(str(program["accepted_tests"]))
+        st.caption(t(str(program["accepted_tests"])))
     with cost_col:
         if pd.notna(program.get("native_currency")):
             currency = program["native_currency"]
@@ -188,8 +223,8 @@ def render_program_details(program):
         st.markdown(
             f"**{t('Can include living costs')}:** {t(str(program['aid_covers_living_costs']))}"
         )
-        st.caption(str(program["scholarship_note"]))
-    st.markdown(f"**{t('Important note')}:** {program['notes']}")
+        st.caption(t(str(program["scholarship_note"])))
+    st.markdown(f"**{t('Important note')}:** {t(str(program['notes']))}")
     st.markdown(
         f"**{t('Application window represented')}:** {program['application_open_date']} — {program['application_deadline_final']}"
     )
@@ -254,33 +289,53 @@ program_search_tab, shortlist_tab = st.tabs(
 
 with program_search_tab:
     st.subheader(t("Your profile"))
-    selected_countries = st.multiselect(
-        t("Countries"),
-        options=sorted(programs["country"].unique()),
-        format_func=t,
-        placeholder=t("All countries"),
-    )
-    selected_fields = st.multiselect(
-        t("Fields of study"),
-        options=sorted(programs["field_category"].unique()),
-        format_func=t,
-        placeholder=t("All fields"),
-    )
-    ielts_score = st.slider(t("IELTS overall score"), 0.0, 9.0, 6.0, 0.5)
-    max_first_year_fees = st.number_input(
-        t("Maximum first-year academic fees (USD)"),
-        min_value=0,
-        max_value=100_000,
-        value=20_000,
-        step=1_000,
-    )
+    country_col, field_col, _ = st.columns([1, 1, 0.45])
+    with country_col:
+        selected_countries = st.multiselect(
+            t("Countries"),
+            options=sorted(programs["country"].unique()),
+            format_func=t,
+            placeholder=t("All countries"),
+            select_all=False,
+            key="program_countries",
+        )
+    with field_col:
+        selected_fields = st.multiselect(
+            t("Fields of study"),
+            options=sorted(programs["field_category"].unique()),
+            format_func=t,
+            placeholder=t("All fields"),
+            select_all=False,
+            key="program_fields",
+        )
+    score_col, budget_col, _ = st.columns([1, 1, 0.45])
+    with score_col:
+        ielts_score = st.slider(
+            t("IELTS overall score"), 0.0, 9.0, 6.0, 0.5, key="ielts_score"
+        )
+    with budget_col:
+        max_first_year_fees = st.number_input(
+            t("Maximum first-year academic fees (USD)"),
+            min_value=0,
+            max_value=100_000,
+            value=20_000,
+            step=1_000,
+            key="max_first_year_fees",
+        )
     use_maximum_tuition_waiver = st.checkbox(
         t(
             "Use the maximum published tuition waiver (best-case scenario, not a prediction)"
-        )
+        ),
+        key="use_maximum_tuition_waiver",
     )
     allow_standardized_test = st.checkbox(
-        t("I can complete an additional standardized academic test")
+        t("I can complete an additional standardized academic test"),
+        key="allow_standardized_test",
+    )
+    st.button(
+        t("Reset filters"),
+        on_click=reset_program_filters,
+        key="reset_program_filters",
     )
 
     all_evaluated = evaluate_programs(
@@ -314,6 +369,8 @@ with program_search_tab:
             options=["Eligible", "Conditional", "Not eligible"],
             default=["Eligible", "Conditional", "Not eligible"],
             format_func=t,
+            select_all=False,
+            key="result_statuses",
         )
         programs_to_show = evaluated[
             evaluated["eligibility_status"].isin(selected_statuses)
@@ -397,46 +454,26 @@ with program_search_tab:
                             ):
                                 show_program_dialog(program)
         else:
-            st.dataframe(
-                programs_to_show[
-                    [
-                        "status_display",
-                        "university",
-                        "program",
-                        "country_display",
-                        "estimated_first_year_fees_usd",
-                        "aid_model_display",
-                        "application_deadline_final",
-                    ]
-                ],
-                hide_index=True,
-                width="stretch",
-                column_config={
-                    "status_display": t("Result"),
-                    "university": t("University"),
-                    "program": t("Program"),
-                    "country_display": t("Country"),
-                    "estimated_first_year_fees_usd": st.column_config.NumberColumn(
-                        t("Estimated fees"), format="$%d"
-                    ),
-                    "aid_model_display": t("Aid model"),
-                    "application_deadline_final": st.column_config.DateColumn(
-                        t("Deadline")
-                    ),
-                },
-            )
-
-            detail_options = programs_to_show.index.tolist()
-            selected_detail = st.selectbox(
-                t("Select a program to view details"),
-                options=detail_options,
-                format_func=lambda index: (
-                    f"{programs_to_show.loc[index, 'university']} — "
-                    f"{programs_to_show.loc[index, 'program']}"
-                ),
-            )
-            if st.button(t("View details"), key="table_details", width="stretch"):
-                show_program_dialog(programs_to_show.loc[selected_detail])
+            for index, program in programs_to_show.iterrows():
+                with st.container(border=True):
+                    status_col, name_col, fee_col, deadline_col, action_col = st.columns(
+                        [1.05, 3.2, 1, 1.15, 0.85]
+                    )
+                    status_col.markdown(f"**{status_icons[program['eligibility_status']]}**")
+                    name_col.markdown(
+                        f"**{program['university']}**  \n{program['program']} · {t(str(program['country']))}"
+                    )
+                    fee_col.markdown(
+                        f"{t('Estimated fees')}  \n**${int(program['estimated_first_year_fees_usd']):,}**"
+                    )
+                    deadline = program["application_deadline_final"]
+                    deadline_col.markdown(
+                        f"{t('Deadline')}  \n**{deadline if pd.notna(deadline) else t('Not published')}**"
+                    )
+                    if action_col.button(
+                        t("View details"), key=f"compact_details::{index}", width="stretch"
+                    ):
+                        show_program_dialog(program)
 
 with shortlist_tab:
     st.divider()
@@ -450,13 +487,14 @@ with shortlist_tab:
         )
         .to_dict()
     )
-    filter_col1, filter_col2 = st.columns(2)
+    filter_col1, filter_col2, _ = st.columns([1, 1, 0.45])
     with filter_col1:
         shortlist_countries = st.multiselect(
             t("Filter by country"),
             options=sorted(keyed_programs["country"].dropna().unique()),
             format_func=t,
             placeholder=t("All countries"),
+            select_all=False,
         )
     with filter_col2:
         shortlist_fields = st.multiselect(
@@ -464,6 +502,7 @@ with shortlist_tab:
             options=sorted(keyed_programs["field_category"].dropna().unique()),
             format_func=t,
             placeholder=t("All fields"),
+            select_all=False,
         )
 
     shortlist_choices = keyed_programs.copy()
@@ -485,6 +524,9 @@ with shortlist_tab:
         format_func=lambda key: program_labels[key],
         key="shortlist_program_keys",
         placeholder=t("Choose one or more programs"),
+        select_all=False,
+        bind="query-params",
+        persist_state="session",
     )
     st.caption(
         t(
@@ -525,37 +567,32 @@ with shortlist_tab:
         shortlist_display["summary_display"] = shortlist_display[
             "eligibility_summary"
         ].map(t)
-        st.dataframe(
-            shortlist_display[
-                [
-                    "status_display",
-                    "university",
-                    "program",
-                    "country_display",
-                    "estimated_first_year_fees_usd",
-                    "aid_model_display",
-                    "living_costs_display",
-                    "summary_display",
-                    "application_deadline_final",
-                ]
+        shortlist_rows = []
+        for _, row in shortlist_display.iterrows():
+            shortlist_rows.append(
+                {
+                    "status": row["status_display"],
+                    "university": row["university"],
+                    "program": row["program"],
+                    "country": row["country_display"],
+                    "fees": f"${int(row['estimated_first_year_fees_usd']):,}",
+                    "issue": row["summary_display"],
+                    "deadline": row["application_deadline_final"].strftime("%Y-%m-%d")
+                    if pd.notna(row["application_deadline_final"])
+                    else t("Not published"),
+                }
+            )
+        render_data_table(
+            shortlist_rows,
+            [
+                ("status", t("Result")),
+                ("university", t("University")),
+                ("program", t("Program")),
+                ("country", t("Country")),
+                ("fees", t("Estimated first-year fees")),
+                ("issue", t("Remaining issue")),
+                ("deadline", t("Deadline")),
             ],
-            hide_index=True,
-            width="stretch",
-            column_config={
-                "status_display": t("Result"),
-                "university": t("University"),
-                "program": t("Program"),
-                "country_display": t("Country"),
-                "estimated_first_year_fees_usd": st.column_config.NumberColumn(
-                    t("Estimated first-year fees"), format="$%d"
-                ),
-                "aid_model_display": t("Aid model"),
-                "living_costs_display": t("Living costs"),
-                "summary_display": t("Remaining issue"),
-                "application_deadline_final": st.column_config.DateColumn(
-                    t("Deadline")
-                ),
-            },
         )
         st.download_button(
             t("Download shortlist as Excel"),
@@ -598,31 +635,32 @@ with shortlist_tab:
         if timeline_to_show.empty:
             st.warning(t("No timeline events match the current view."))
         else:
-            st.dataframe(
-                timeline_to_show[
-                    [
-                        "event_date",
-                        "timing",
-                        "university",
-                        "program",
-                        "event",
-                        "date_type",
-                        "note",
-                        "source",
-                    ]
+            timeline_rows = []
+            for _, row in timeline_to_show.iterrows():
+                timeline_rows.append(
+                    {
+                        "date": row["event_date"].strftime("%Y-%m-%d"),
+                        "timing": row["timing"],
+                        "university": row["university"],
+                        "program": row["program"],
+                        "event": row["event"],
+                        "type": row["date_type"],
+                        "note": row["note"],
+                        "source": row["source"] or t("Not applicable — OpenPath recommendation"),
+                    }
+                )
+            render_data_table(
+                timeline_rows,
+                [
+                    ("date", t("Date")),
+                    ("timing", t("Timing")),
+                    ("university", t("University")),
+                    ("program", t("Program")),
+                    ("event", t("Action")),
+                    ("type", t("Date type")),
+                    ("note", t("Details")),
+                    ("source", t("Official source")),
                 ],
-                hide_index=True,
-                width="stretch",
-                column_config={
-                    "event_date": st.column_config.DateColumn(t("Date")),
-                    "timing": t("Timing"),
-                    "university": t("University"),
-                    "program": t("Program"),
-                    "event": t("Action"),
-                    "date_type": t("Date type"),
-                    "note": t("Details"),
-                    "source": st.column_config.LinkColumn(t("Official source")),
-                },
             )
 
         st.download_button(
@@ -679,10 +717,7 @@ with shortlist_tab:
                     program_tasks.iloc[0]["source"],
                 )
 
-st.subheader(t("Sources and limitations"))
-st.write(
-    t(
-        "OpenPath does not treat missing information as zero and does not predict "
-        "scholarship probability without reliable historical decision data."
-    )
+st.markdown(
+    f'<footer class="op-footer">{escape(t("OpenPath does not treat missing information as zero and does not predict scholarship probability without reliable historical decision data."))}</footer>',
+    unsafe_allow_html=True,
 )

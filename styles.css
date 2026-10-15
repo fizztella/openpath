@@ -170,6 +170,24 @@ h2, h3 {
     padding: 0 !important;
 }
 
+/* Keep the tag remove icon compact in Chromium-based Windows browsers. */
+.stApp [data-baseweb="tag"] button,
+.stApp [data-baseweb="tag"] [role="button"] {
+    background-color: transparent !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    height: 1rem !important;
+    min-height: 1rem !important;
+    min-width: 1rem !important;
+    width: 1rem !important;
+}
+
+.stApp [data-baseweb="tag"] button svg,
+.stApp [data-baseweb="tag"] [role="button"] svg {
+    height: 0.7rem !important;
+    width: 0.7rem !important;
+}
+
 .stApp input::placeholder,
 .stApp textarea::placeholder {
     color: var(--op-muted) !important;
@@ -223,6 +241,56 @@ h2, h3 {
     border: 1px solid var(--op-border);
     border-radius: 3px;
     overflow: hidden;
+}
+
+.op-table-wrap {
+    border: 1px solid var(--op-border);
+    border-radius: 3px;
+    margin: 0.5rem 0 1rem;
+    overflow-x: auto;
+    width: 100%;
+}
+
+.op-table {
+    background: var(--op-panel);
+    border-collapse: collapse;
+    color: var(--op-text);
+    font-size: 0.85rem;
+    min-width: 940px;
+    width: 100%;
+}
+
+.op-table th {
+    background: var(--op-panel-strong);
+    color: var(--op-muted);
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.op-table th,
+.op-table td {
+    border-bottom: 1px solid var(--op-border);
+    padding: 0.68rem 0.75rem;
+    vertical-align: top;
+}
+
+.op-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.op-table tbody tr:hover {
+    background: rgba(57, 118, 195, 0.06);
+}
+
+.op-table a {
+    color: var(--op-accent-soft);
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.op-table a:hover {
+    text-decoration: underline;
 }
 
 .op-result-card {
@@ -367,6 +435,28 @@ div[data-baseweb="modal"] {
 hr {
     border-color: var(--op-border) !important;
     margin: 2.4rem 0 !important;
+}
+
+.op-footer {
+    border-top: 1px solid var(--op-border);
+    color: var(--op-muted);
+    font-size: 0.76rem;
+    line-height: 1.5;
+    margin-top: 3rem;
+    padding-top: 1rem;
+}
+
+/* This rule must follow the general select-button styling above. */
+.stApp [data-testid="stMultiSelect"] [data-baseweb="tag"] button,
+.stApp [data-testid="stMultiSelect"] [data-baseweb="tag"] [role="button"] {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    height: 1rem !important;
+    min-height: 1rem !important;
+    min-width: 1rem !important;
+    padding: 0 !important;
+    width: 1rem !important;
 }
 
 @media (max-width: 700px) {

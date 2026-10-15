@@ -350,6 +350,8 @@ EXTRA_TRANSLATIONS = {
         "Past by {days} days": "Просрочено на {days} дн.",
         "Due in {days} days": "Через {days} дн.",
         "In {days} days": "Через {days} дн.",
+        "Reset filters": "Сбросить фильтры",
+        "Not applicable — OpenPath recommendation": "Не применимо — рекомендация OpenPath",
     },
     "uk": {
         "Verified admissions intelligence": "Перевірені дані про вступ",
@@ -368,6 +370,12 @@ EXTRA_TRANSLATIONS = {
         "Next action": "Наступна дія",
         "for": "для",
         "on": "на дату",
+        "Reset filters": "Скинути фільтри",
+        "Not applicable — OpenPath recommendation": "Не застосовується — рекомендація OpenPath",
+        "Standardized academic scores are accepted when applicable to the applicant's education system but are not a universal extra-test requirement": "Стандартизовані академічні результати приймаються, якщо вони застосовні до системи освіти вступника, але не є універсальною вимогою щодо додаткового тесту",
+        "30%, 50%, 65%, 80%, or 100% tuition reduction for the standard study period; renewal is reviewed each semester": "Зниження плати за навчання на 30%, 50%, 65%, 80% або 100% протягом стандартного періоду навчання; поновлення переглядається щосеместру",
+        "Application dates shown are the full published range for the general countries-and-regions schedule": "Зазначені дати подання охоплюють увесь опублікований період для загального графіка країн і регіонів",
+        "IELTS Academic overall 6.0 with every component at least 5.5": "IELTS Academic: загальний бал 6.0, кожен компонент — не менше 5.5",
     },
     "es": {
         "Verified admissions intelligence": "Información de admisión verificada",
@@ -386,6 +394,8 @@ EXTRA_TRANSLATIONS = {
         "Next action": "Próxima acción",
         "for": "para",
         "on": "el",
+        "Reset filters": "Restablecer filtros",
+        "Not applicable — OpenPath recommendation": "No aplicable — recomendación de OpenPath",
     },
     "de": {
         "Verified admissions intelligence": "Geprüfte Zulassungsinformationen",
@@ -404,6 +414,8 @@ EXTRA_TRANSLATIONS = {
         "Next action": "Nächster Schritt",
         "for": "für",
         "on": "am",
+        "Reset filters": "Filter zurücksetzen",
+        "Not applicable — OpenPath recommendation": "Nicht zutreffend — OpenPath-Empfehlung",
     },
     "ja": {
         "Verified admissions intelligence": "検証済みの入試情報",
@@ -422,6 +434,8 @@ EXTRA_TRANSLATIONS = {
         "Next action": "次の行動",
         "for": "対象",
         "on": "日付",
+        "Reset filters": "フィルターをリセット",
+        "Not applicable — OpenPath recommendation": "該当なし — OpenPathの推奨日程",
     },
 }
 
