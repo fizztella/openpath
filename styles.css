@@ -221,8 +221,50 @@ h2, h3 {
 
 .stApp [data-testid="stNumberInput"] button {
     background-color: var(--op-panel) !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: var(--op-text) !important;
+}
+
+.stApp [data-testid="stNumberInput"] [data-baseweb="input"],
+.stApp [data-testid="stNumberInput"] [data-baseweb="base-input"],
+.stApp [data-testid="stNumberInput"] input {
+    background: var(--op-panel) !important;
     border-color: var(--op-border) !important;
     color: var(--op-text) !important;
+}
+
+.stApp [data-testid="stNumberInput"] button::before,
+.stApp [data-testid="stNumberInput"] button::after {
+    display: none !important;
+}
+
+.stApp [data-testid="stCheckbox"] label > span:first-child,
+.stApp label[data-baseweb="checkbox"] > span:first-child {
+    background: var(--op-panel) !important;
+    border: 1px solid var(--op-border) !important;
+    box-shadow: none !important;
+}
+
+.stApp [data-testid="stCheckbox"] input:checked + span,
+.stApp label[data-baseweb="checkbox"] input:checked + span {
+    background: var(--op-accent) !important;
+    border-color: var(--op-accent) !important;
+}
+
+.stApp [data-testid="stPills"] button,
+.stApp [data-testid="stPills"] [role="button"] {
+    background: var(--op-panel) !important;
+    border: 1px solid var(--op-border) !important;
+    border-radius: 2px !important;
+    color: var(--op-text) !important;
+}
+
+.stApp [data-testid="stPills"] button[aria-pressed="true"],
+.stApp [data-testid="stPills"] [role="button"][aria-selected="true"] {
+    background: var(--op-accent) !important;
+    border-color: var(--op-accent) !important;
+    color: #ffffff !important;
 }
 
 .stApp [data-testid="stSelectbox"] > div > div,

@@ -291,22 +291,22 @@ with program_search_tab:
     st.subheader(t("Your profile"))
     country_col, field_col, _ = st.columns([1, 1, 0.45])
     with country_col:
-        selected_countries = st.multiselect(
+        selected_countries = st.pills(
             t("Countries"),
             options=sorted(programs["country"].unique()),
             format_func=t,
-            placeholder=t("All countries"),
-            select_all=False,
+            selection_mode="multi",
             key="program_countries",
+            wrap=True,
         )
     with field_col:
-        selected_fields = st.multiselect(
+        selected_fields = st.pills(
             t("Fields of study"),
             options=sorted(programs["field_category"].unique()),
             format_func=t,
-            placeholder=t("All fields"),
-            select_all=False,
+            selection_mode="multi",
             key="program_fields",
+            wrap=True,
         )
     score_col, budget_col, _ = st.columns([1, 1, 0.45])
     with score_col:
@@ -364,13 +364,14 @@ with program_search_tab:
         result_col2.metric(t("Conditional"), int(conditional_count))
         result_col3.metric(t("Not eligible"), int(not_eligible_count))
 
-        selected_statuses = st.multiselect(
+        selected_statuses = st.pills(
             t("Result status"),
             options=["Eligible", "Conditional", "Not eligible"],
             default=["Eligible", "Conditional", "Not eligible"],
             format_func=t,
-            select_all=False,
+            selection_mode="multi",
             key="result_statuses",
+            wrap=True,
         )
         programs_to_show = evaluated[
             evaluated["eligibility_status"].isin(selected_statuses)
@@ -489,20 +490,20 @@ with shortlist_tab:
     )
     filter_col1, filter_col2, _ = st.columns([1, 1, 0.45])
     with filter_col1:
-        shortlist_countries = st.multiselect(
+        shortlist_countries = st.pills(
             t("Filter by country"),
             options=sorted(keyed_programs["country"].dropna().unique()),
             format_func=t,
-            placeholder=t("All countries"),
-            select_all=False,
+            selection_mode="multi",
+            wrap=True,
         )
     with filter_col2:
-        shortlist_fields = st.multiselect(
+        shortlist_fields = st.pills(
             t("Filter by field"),
             options=sorted(keyed_programs["field_category"].dropna().unique()),
             format_func=t,
-            placeholder=t("All fields"),
-            select_all=False,
+            selection_mode="multi",
+            wrap=True,
         )
 
     shortlist_choices = keyed_programs.copy()
