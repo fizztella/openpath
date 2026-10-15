@@ -82,6 +82,7 @@ def toggle_theme():
 
 
 with theme_col:
+    st.markdown("<div class='op-theme-label'>&nbsp;</div>", unsafe_allow_html=True)
     st.button(
         "☀️" if st.session_state.theme_mode == "dark" else "🌙",
         help=t("Switch to light theme")
