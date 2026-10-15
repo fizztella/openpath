@@ -35,3 +35,15 @@ This document explains what every field in `data/programs.csv` means.
 4. Separate tuition from the total first-year cost.
 5. Describe what a scholarship actually covers instead of reporting only a percentage.
 
+## Scholarship scenario calculation
+
+The prototype can show a best-case scenario using the maximum published tuition waiver. This is not a prediction of whether an applicant will receive it.
+
+```text
+estimated first-year fees
+= first-year academic fees
+- (annual tuition × maximum waiver percentage)
+```
+
+Non-tuition charges remain in the estimate. If the maximum waiver is missing, the program receives no assumed reduction.
+

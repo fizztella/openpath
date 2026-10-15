@@ -26,11 +26,14 @@ col3.metric("Countries", programs["country"].nunique())
 st.subheader("Your profile")
 ielts_score = st.slider("IELTS overall score", 0.0, 9.0, 6.0, 0.5)
 max_first_year_fees = st.number_input(
-    "Maximum first-year academic fees before scholarship (JPY)",
+    "Maximum first-year academic fees (JPY)",
     min_value=0,
     max_value=5_000_000,
     value=2_100_000,
     step=100_000,
+)
+use_maximum_tuition_waiver = st.checkbox(
+    "Use the maximum published tuition waiver (best-case scenario, not a prediction)"
 )
 allow_standardized_test = st.checkbox(
     "Include programs that require an additional standardized academic test"
@@ -41,6 +44,7 @@ eligible = filter_programs(
     ielts_score=ielts_score,
     allow_standardized_test=allow_standardized_test,
     max_first_year_fees_jpy=max_first_year_fees,
+    use_maximum_tuition_waiver=use_maximum_tuition_waiver,
 )
 
 st.subheader("Matching programs")
@@ -57,6 +61,7 @@ else:
                 "standardized_test_required",
                 "first_year_academic_fees_jpy",
                 "max_tuition_waiver_percent",
+                "estimated_first_year_fees_jpy",
                 "application_deadline",
             ]
         ],
@@ -72,6 +77,9 @@ else:
                 "First-year academic fees", format="¥%d"
             ),
             "max_tuition_waiver_percent": "Maximum tuition waiver (%)",
+            "estimated_first_year_fees_jpy": st.column_config.NumberColumn(
+                "Estimated fees in this scenario", format="¥%d"
+            ),
             "application_deadline": st.column_config.DateColumn("Final deadline"),
         },
     )
