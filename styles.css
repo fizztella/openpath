@@ -1,32 +1,31 @@
 :root {
     --op-bg: #0b0e12;
-    --op-panel: rgba(20, 25, 32, 0.88);
+    --op-panel: #14191f;
     --op-panel-strong: #171d25;
     --op-border: rgba(255, 255, 255, 0.09);
-    --op-border-warm: rgba(232, 166, 87, 0.38);
+    --op-border-warm: rgba(174, 139, 93, 0.34);
     --op-text: #f4f1ea;
     --op-muted: #a8adb7;
-    --op-amber: #e8a657;
-    --op-amber-soft: #f2c98f;
+    --op-amber: #b78a52;
+    --op-amber-soft: #cfad7d;
     --op-green: #57c98b;
     --op-red: #ec7777;
 }
 
 .stApp {
-    background:
-        radial-gradient(circle at 82% -10%, rgba(232, 166, 87, 0.13), transparent 31rem),
-        radial-gradient(circle at -12% 34%, rgba(81, 105, 129, 0.11), transparent 34rem),
-        var(--op-bg);
+    background: var(--op-bg);
     color: var(--op-text);
 }
 
 [data-testid="stHeader"] {
     background: rgba(11, 14, 18, 0.76);
-    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--op-border);
 }
 
 .block-container {
-    max-width: 1380px;
+    max-width: 1580px;
+    padding-left: 2.25rem;
+    padding-right: 2.25rem;
     padding-top: 2.3rem;
     padding-bottom: 5rem;
 }
@@ -75,12 +74,11 @@ h2, h3 {
 }
 
 [data-testid="stMetric"] {
-    background: linear-gradient(145deg, rgba(25, 31, 40, 0.92), rgba(17, 21, 27, 0.92));
+    background: var(--op-panel);
     border: 1px solid var(--op-border);
-    border-radius: 16px;
+    border-radius: 8px;
     min-height: 112px;
     padding: 1rem 1.15rem;
-    box-shadow: 0 14px 42px rgba(0, 0, 0, 0.16);
 }
 
 [data-testid="stMetricLabel"] {
@@ -96,7 +94,7 @@ h2, h3 {
 [data-testid="stTabs"] [role="tablist"] {
     background: rgba(18, 23, 30, 0.84);
     border: 1px solid var(--op-border);
-    border-radius: 14px;
+    border-radius: 8px;
     gap: 0.35rem;
     margin: 1.4rem 0 1.8rem;
     padding: 0.35rem;
@@ -104,7 +102,7 @@ h2, h3 {
 
 .stTabs [data-baseweb="tab"],
 [data-testid="stTabs"] [role="tab"] {
-    border-radius: 10px;
+    border-radius: 6px;
     color: var(--op-muted);
     font-weight: 650;
     min-height: 44px;
@@ -113,7 +111,7 @@ h2, h3 {
 
 .stTabs [aria-selected="true"],
 [data-testid="stTabs"] [role="tab"][aria-selected="true"] {
-    background: rgba(232, 166, 87, 0.14);
+    background: rgba(183, 138, 82, 0.10);
     color: var(--op-amber-soft) !important;
 }
 
@@ -129,15 +127,14 @@ h2, h3 {
 
 [data-testid="stDataFrame"] {
     border: 1px solid var(--op-border);
-    border-radius: 14px;
+    border-radius: 8px;
     overflow: hidden;
 }
 
 .op-result-card {
-    background: linear-gradient(145deg, rgba(24, 30, 38, 0.96), rgba(16, 20, 26, 0.96));
+    background: var(--op-panel);
     border: 1px solid var(--op-border);
-    border-radius: 16px;
-    box-shadow: 0 15px 36px rgba(0, 0, 0, 0.14);
+    border-radius: 8px;
     min-height: 255px;
     margin-bottom: 1rem;
     padding: 1.15rem 1.25rem;
@@ -199,7 +196,7 @@ h2, h3 {
 [data-testid="stExpander"] {
     background: var(--op-panel);
     border: 1px solid var(--op-border) !important;
-    border-radius: 14px !important;
+    border-radius: 8px !important;
     margin-bottom: 0.65rem;
     overflow: hidden;
 }
@@ -212,7 +209,7 @@ h2, h3 {
 .stDownloadButton > button,
 [data-testid="stLinkButton"] a {
     border: 1px solid var(--op-border-warm) !important;
-    border-radius: 11px !important;
+    border-radius: 7px !important;
     font-weight: 700 !important;
     transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
 }
@@ -223,16 +220,22 @@ h2, h3 {
     background: rgba(232, 166, 87, 0.12) !important;
     border-color: var(--op-amber) !important;
     color: var(--op-amber-soft) !important;
-    transform: translateY(-1px);
 }
 
 [data-testid="stAlert"] {
-    border-radius: 13px;
+    border-radius: 8px;
     border-width: 1px;
 }
 
 [data-testid="stProgress"] > div > div > div > div {
-    background: linear-gradient(90deg, #c7833e, var(--op-amber));
+    background: var(--op-amber);
+}
+
+.op-page-count {
+    color: var(--op-muted);
+    font-variant-numeric: tabular-nums;
+    padding: 0.55rem 0;
+    text-align: center;
 }
 
 hr {

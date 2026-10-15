@@ -1,10 +1,11 @@
 from datetime import date
+from io import BytesIO
 from pathlib import Path
 
 import pandas as pd
 
 from filters import evaluate_programs
-from shortlist import add_program_keys, build_shortlist, next_deadline, shortlist_csv
+from shortlist import add_program_keys, build_shortlist, next_deadline, shortlist_xlsx
 
 DATA_PATH = Path(__file__).parents[1] / "data" / "programs.csv"
 
@@ -44,12 +45,12 @@ def test_next_deadline_ignores_past_dates():
     assert deadline.strftime("%Y-%m-%d") == "2027-01-15"
 
 
-def test_csv_export_contains_comparison_fields():
+def test_excel_export_contains_comparison_fields():
     evaluated = add_program_keys(evaluated_programs())
     shortlist = build_shortlist(evaluated, evaluated.iloc[[0]]["program_key"].tolist())
 
-    exported = shortlist_csv(shortlist).decode("utf-8")
+    exported = pd.read_excel(BytesIO(shortlist_xlsx(shortlist)))
 
-    assert "eligibility_status" in exported
-    assert "estimated_first_year_fees_usd" in exported
-    assert "program_key" not in exported
+    assert "eligibility_status" in exported.columns
+    assert "estimated_first_year_fees_usd" in exported.columns
+    assert "program_key" not in exported.columns

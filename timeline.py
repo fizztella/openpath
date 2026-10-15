@@ -1,4 +1,5 @@
 from datetime import date
+from io import BytesIO
 
 import pandas as pd
 
@@ -107,8 +108,8 @@ def build_application_timeline(
         return timeline.assign(days_remaining=pd.Series(dtype="int64"), timing="")
 
     timeline["event_date"] = pd.to_datetime(timeline["event_date"])
-    timeline["days_remaining"] = (
-        timeline["event_date"].dt.date.map(lambda event_date: (event_date - today).days)
+    timeline["days_remaining"] = timeline["event_date"].dt.date.map(
+        lambda event_date: (event_date - today).days
     )
     timeline["timing"] = timeline["days_remaining"].map(_timing_label)
     return timeline.sort_values(["event_date", "university", "event"]).reset_index(
@@ -147,8 +148,17 @@ def next_timeline_event(timeline: pd.DataFrame):
     return upcoming.iloc[0] if not upcoming.empty else None
 
 
-def timeline_csv(timeline: pd.DataFrame) -> bytes:
-    """Export timeline dates and source links."""
+def timeline_xlsx(timeline: pd.DataFrame) -> bytes:
+    """Export timeline dates and source links as a genuine Excel workbook."""
     export = timeline.copy()
     export["event_date"] = export["event_date"].dt.strftime("%Y-%m-%d")
-    return export.to_csv(index=False).encode("utf-8")
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        export.to_excel(writer, sheet_name="Timeline", index=False)
+        worksheet = writer.sheets["Timeline"]
+        worksheet.freeze_panes = "A2"
+        worksheet.auto_filter.ref = worksheet.dimensions
+        for column in worksheet.columns:
+            width = min(max(len(str(cell.value or "")) for cell in column) + 2, 48)
+            worksheet.column_dimensions[column[0].column_letter].width = width
+    return output.getvalue()

@@ -1,4 +1,5 @@
 from datetime import date
+from io import BytesIO
 
 import pandas as pd
 
@@ -42,8 +43,8 @@ def next_deadline(shortlist: pd.DataFrame, today: date | None = None):
     return upcoming.min() if not upcoming.empty else None
 
 
-def shortlist_csv(shortlist: pd.DataFrame) -> bytes:
-    """Export the useful comparison fields without internal identifiers."""
+def shortlist_xlsx(shortlist: pd.DataFrame) -> bytes:
+    """Export the useful comparison fields as a genuine Excel workbook."""
     columns = [
         "university",
         "program",
@@ -66,4 +67,13 @@ def shortlist_csv(shortlist: pd.DataFrame) -> bytes:
     export["application_deadline_final"] = export[
         "application_deadline_final"
     ].dt.strftime("%Y-%m-%d")
-    return export.to_csv(index=False).encode("utf-8")
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        export.to_excel(writer, sheet_name="Shortlist", index=False)
+        worksheet = writer.sheets["Shortlist"]
+        worksheet.freeze_panes = "A2"
+        worksheet.auto_filter.ref = worksheet.dimensions
+        for column in worksheet.columns:
+            width = min(max(len(str(cell.value or "")) for cell in column) + 2, 48)
+            worksheet.column_dimensions[column[0].column_letter].width = width
+    return output.getvalue()

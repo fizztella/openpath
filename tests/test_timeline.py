@@ -1,8 +1,9 @@
 from datetime import date
+from io import BytesIO
 
 import pandas as pd
 
-from timeline import build_application_timeline, next_timeline_event, timeline_csv
+from timeline import build_application_timeline, next_timeline_event, timeline_xlsx
 
 
 def sample_shortlist():
@@ -49,10 +50,10 @@ def test_next_event_skips_past_events():
     assert event["event"] == "Complete English proficiency test"
 
 
-def test_timeline_csv_includes_date_type_and_source():
+def test_timeline_excel_includes_date_type_and_source():
     timeline = build_application_timeline(sample_shortlist(), date(2026, 10, 15))
 
-    exported = timeline_csv(timeline).decode("utf-8")
+    exported = pd.read_excel(BytesIO(timeline_xlsx(timeline)))
 
-    assert "date_type" in exported
-    assert "https://example.edu/admissions" in exported
+    assert "date_type" in exported.columns
+    assert "https://example.edu/admissions" in exported["source"].tolist()
