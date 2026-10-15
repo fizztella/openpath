@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from filters import filter_programs
+from filters import evaluate_programs
 
 st.set_page_config(page_title="OpenPath", page_icon="🎓", layout="wide")
 
@@ -46,10 +46,10 @@ use_maximum_tuition_waiver = st.checkbox(
     "Use the maximum published tuition waiver (best-case scenario, not a prediction)"
 )
 allow_standardized_test = st.checkbox(
-    "Include programs that require an additional standardized academic test"
+    "I can complete an additional standardized academic test"
 )
 
-eligible = filter_programs(
+evaluated = evaluate_programs(
     programs,
     ielts_score=ielts_score,
     allow_standardized_test=allow_standardized_test,
@@ -59,13 +59,40 @@ eligible = filter_programs(
     selected_countries=selected_countries,
 )
 
-st.subheader("Matching programs")
-if eligible.empty:
-    st.warning("No programs match these filters in the current prototype dataset.")
+st.subheader("Eligibility results")
+if evaluated.empty:
+    st.warning("No programs match the selected countries and fields.")
 else:
+    eligible_count = (evaluated["eligibility_status"] == "Eligible").sum()
+    conditional_count = (evaluated["eligibility_status"] == "Conditional").sum()
+    not_eligible_count = (evaluated["eligibility_status"] == "Not eligible").sum()
+
+    result_col1, result_col2, result_col3 = st.columns(3)
+    result_col1.metric("Eligible", int(eligible_count))
+    result_col2.metric("Conditional", int(conditional_count))
+    result_col3.metric("Not eligible", int(not_eligible_count))
+
+    selected_statuses = st.multiselect(
+        "Result status",
+        options=["Eligible", "Conditional", "Not eligible"],
+        default=["Eligible", "Conditional", "Not eligible"],
+    )
+    programs_to_show = evaluated[
+        evaluated["eligibility_status"].isin(selected_statuses)
+    ].copy()
+    status_icons = {
+        "Eligible": "🟢 Eligible",
+        "Conditional": "🟡 Conditional",
+        "Not eligible": "🔴 Not eligible",
+    }
+    programs_to_show["status_display"] = programs_to_show[
+        "eligibility_status"
+    ].map(status_icons)
+
     st.dataframe(
-        eligible[
+        programs_to_show[
             [
+                "status_display",
                 "university",
                 "program",
                 "country",
@@ -78,12 +105,14 @@ else:
                 "first_year_academic_fees_native",
                 "max_tuition_waiver_percent",
                 "estimated_first_year_fees_usd",
+                "eligibility_summary",
                 "application_deadline_final",
             ]
         ],
         hide_index=True,
         width="stretch",
         column_config={
+            "status_display": "Result",
             "university": "University",
             "program": "Program",
             "country": "Country",
@@ -102,14 +131,27 @@ else:
             "estimated_first_year_fees_usd": st.column_config.NumberColumn(
                 "Estimated fees in this scenario (USD)", format="$%d"
             ),
+            "eligibility_summary": "Why",
             "application_deadline_final": st.column_config.DateColumn("Final deadline"),
         },
     )
 
     st.subheader("Program details")
-    for _, program in eligible.iterrows():
-        expander_title = f"{program['university']} — {program['program']}"
+    for _, program in programs_to_show.iterrows():
+        expander_title = (
+            f"{status_icons[program['eligibility_status']]} · "
+            f"{program['university']} — {program['program']}"
+        )
         with st.expander(expander_title):
+            status = program["eligibility_status"]
+            if status == "Eligible":
+                st.success(program["eligibility_summary"])
+            elif status == "Conditional":
+                st.warning(program["eligibility_summary"])
+            else:
+                st.error(program["eligibility_summary"])
+            st.caption(program["eligibility_details"])
+
             details_col, cost_col = st.columns(2)
 
             with details_col:

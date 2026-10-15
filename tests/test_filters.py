@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from filters import filter_programs
+from filters import evaluate_programs, filter_programs
 
 DATA_PATH = Path(__file__).parents[1] / "data" / "programs.csv"
 
@@ -91,4 +91,42 @@ def test_conditional_test_program_is_visible_without_test_checkbox():
     result = filter_programs(load_programs(), 7.0, False, 100_000, False)
 
     assert "Arizona State University" in result["university"].tolist()
+
+
+def test_evaluation_keeps_failed_programs_and_explains_ielts_gap():
+    result = evaluate_programs(load_programs(), 5.5, False, 100_000, False)
+    illinois_tech = result[
+        result["university"] == "Illinois Institute of Technology"
+    ].iloc[0]
+
+    assert illinois_tech["eligibility_status"] == "Not eligible"
+    assert "IELTS is 5.5; 6.5 is required" in illinois_tech["eligibility_details"]
+
+
+def test_evaluation_explains_budget_gap():
+    result = evaluate_programs(load_programs(), 7.0, False, 10_000, False)
+    temple = result[result["university"] == "Temple University"].iloc[0]
+
+    assert temple["eligibility_status"] == "Not eligible"
+    assert "exceed the budget by $32,538" in temple["eligibility_details"]
+
+
+def test_conditional_test_requirement_produces_conditional_status():
+    result = evaluate_programs(load_programs(), 7.0, False, 100_000, False)
+    asu = result[result["university"] == "Arizona State University"].iloc[0]
+
+    assert asu["eligibility_status"] == "Conditional"
+    assert "may be required conditionally" in asu["eligibility_details"]
+
+
+def test_required_test_is_blocker_until_applicant_accepts_it():
+    without_test = evaluate_programs(load_programs(), 7.0, False, 100_000, False)
+    with_test = evaluate_programs(load_programs(), 7.0, True, 100_000, False)
+
+    assert without_test.loc[
+        without_test["university"] == "University of Aizu", "eligibility_status"
+    ].iloc[0] == "Not eligible"
+    assert with_test.loc[
+        with_test["university"] == "University of Aizu", "eligibility_status"
+    ].iloc[0] == "Conditional"
 
