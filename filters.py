@@ -8,6 +8,7 @@ def filter_programs(
     max_first_year_fees_jpy: int,
     use_maximum_tuition_waiver: bool,
     selected_fields: list[str] | None = None,
+    selected_countries: list[str] | None = None,
 ) -> pd.DataFrame:
     """Return programs that match the applicant's current profile."""
     programs = programs.copy()
@@ -43,6 +44,9 @@ def filter_programs(
 
     if selected_fields:
         eligible = eligible[eligible["field_category"].isin(selected_fields)]
+
+    if selected_countries:
+        eligible = eligible[eligible["country"].isin(selected_countries)]
 
     return eligible
 

@@ -24,6 +24,11 @@ col2.metric("Universities", programs["university"].nunique())
 col3.metric("Countries", programs["country"].nunique())
 
 st.subheader("Your profile")
+selected_countries = st.multiselect(
+    "Countries",
+    options=sorted(programs["country"].unique()),
+    placeholder="All countries",
+)
 selected_fields = st.multiselect(
     "Fields of study",
     options=sorted(programs["field_category"].unique()),
@@ -51,6 +56,7 @@ eligible = filter_programs(
     max_first_year_fees_jpy=max_first_year_fees,
     use_maximum_tuition_waiver=use_maximum_tuition_waiver,
     selected_fields=selected_fields,
+    selected_countries=selected_countries,
 )
 
 st.subheader("Matching programs")
@@ -62,6 +68,7 @@ else:
             [
                 "university",
                 "program",
+                "country",
                 "field_category",
                 "intake",
                 "ielts_overall",
@@ -77,6 +84,7 @@ else:
         column_config={
             "university": "University",
             "program": "Program",
+            "country": "Country",
             "field_category": "Field",
             "intake": "Intake",
             "ielts_overall": "IELTS",
@@ -125,12 +133,24 @@ else:
                 st.write(program["accepted_tests"])
 
             with cost_col:
+                if pd.notna(program.get("native_currency")):
+                    native_currency = program["native_currency"]
+                    native_annual = program["annual_tuition_native"]
+                    native_first_year = program["first_year_academic_fees_native"]
+                    st.markdown(
+                        "**Published annual tuition:** "
+                        f"{native_currency} {native_annual:,.2f}"
+                    )
+                    st.markdown(
+                        "**Published first-year academic fees:** "
+                        f"{native_currency} {native_first_year:,.2f}"
+                    )
                 st.markdown(
-                    "**Annual tuition:** "
+                    "**Annual tuition (JPY comparison):** "
                     f"¥{int(program['annual_tuition_jpy']):,}"
                 )
                 st.markdown(
-                    "**First-year academic fees:** "
+                    "**First-year academic fees (JPY comparison):** "
                     f"¥{int(program['first_year_academic_fees_jpy']):,}"
                 )
                 st.markdown(

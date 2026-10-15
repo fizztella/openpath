@@ -4,7 +4,7 @@ OpenPath helps international applicants compare degree programs using admission 
 
 ## Project status
 
-The project is currently in its first development stage. The prototype contains three verified Japanese undergraduate programs and a simple IELTS and academic-test filter.
+The project is currently in its first development stage. The prototype compares undergraduate programs in Japan and Austria using language, field, country, test, and budget filters.
 
 ## Planned features
 

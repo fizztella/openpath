@@ -34,6 +34,11 @@ This document explains what every field in `data/programs.csv` means.
 | `last_verified` | Date on which the record was checked against official sources. |
 | `verification_status` | Current verification state of the record. |
 | `notes` | Important information that does not fit another field. |
+| `native_currency` | Currency used by the institution when publishing its fees. |
+| `annual_tuition_native` | Annual tuition in the institution's published currency. |
+| `first_year_academic_fees_native` | First-year academic fees in the published currency. |
+| `jpy_per_currency_unit` | Exchange rate used to normalize the native fee into JPY. |
+| `exchange_rate_date` | Date of the exchange rate used for comparison. |
 
 ## Data principles
 
@@ -42,6 +47,7 @@ This document explains what every field in `data/programs.csv` means.
 3. Record the intake because requirements and fees change over time.
 4. Separate tuition from the total first-year cost.
 5. Describe what a scholarship actually covers instead of reporting only a percentage.
+6. Keep the institution's native fee and record the dated exchange rate used for cross-country comparison.
 
 ## Scholarship scenario calculation
 

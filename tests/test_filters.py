@@ -53,6 +53,20 @@ def test_field_filter_returns_only_selected_subjects():
     assert (result["field_category"] == "Computer Science").all()
 
 
+def test_country_filter_returns_only_selected_countries():
+    result = filter_programs(
+        load_programs(),
+        7.0,
+        True,
+        5_000_000,
+        False,
+        selected_countries=["Austria"],
+    )
+
+    assert not result.empty
+    assert (result["country"] == "Austria").all()
+
+
 def test_program_without_published_ielts_minimum_is_not_incorrectly_excluded():
     programs = load_programs().iloc[[0]].copy()
     programs["ielts_requirement_type"] = "No published minimum"
