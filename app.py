@@ -24,6 +24,11 @@ col2.metric("Universities", programs["university"].nunique())
 col3.metric("Countries", programs["country"].nunique())
 
 st.subheader("Your profile")
+selected_fields = st.multiselect(
+    "Fields of study",
+    options=sorted(programs["field_category"].unique()),
+    placeholder="All fields",
+)
 ielts_score = st.slider("IELTS overall score", 0.0, 9.0, 6.0, 0.5)
 max_first_year_fees = st.number_input(
     "Maximum first-year academic fees (JPY)",
@@ -45,6 +50,7 @@ eligible = filter_programs(
     allow_standardized_test=allow_standardized_test,
     max_first_year_fees_jpy=max_first_year_fees,
     use_maximum_tuition_waiver=use_maximum_tuition_waiver,
+    selected_fields=selected_fields,
 )
 
 st.subheader("Matching programs")
@@ -56,6 +62,7 @@ else:
             [
                 "university",
                 "program",
+                "field_category",
                 "intake",
                 "ielts_overall",
                 "standardized_test_required",
@@ -70,6 +77,7 @@ else:
         column_config={
             "university": "University",
             "program": "Program",
+            "field_category": "Field",
             "intake": "Intake",
             "ielts_overall": "IELTS",
             "standardized_test_required": "Extra test",
@@ -92,8 +100,14 @@ else:
 
             with details_col:
                 st.markdown(f"**Degree:** {program['degree']}")
+                st.markdown(f"**Field:** {program['field_category']}")
+                st.markdown(f"**Duration:** {program['duration_years']} years")
                 st.markdown(f"**Location:** {program['city']}, {program['country']}")
                 st.markdown(f"**Language:** {program['language']}")
+                st.markdown(
+                    "**Japanese required at admission:** "
+                    f"{program['japanese_required_at_admission']}"
+                )
                 st.markdown(f"**Intake:** {program['intake']}")
                 st.markdown(f"**IELTS:** {program['ielts_overall']} — {program['ielts_note']}")
                 st.markdown(

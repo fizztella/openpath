@@ -7,6 +7,7 @@ def filter_programs(
     allow_standardized_test: bool,
     max_first_year_fees_jpy: int,
     use_maximum_tuition_waiver: bool,
+    selected_fields: list[str] | None = None,
 ) -> pd.DataFrame:
     """Return programs that match the applicant's current profile."""
     programs = programs.copy()
@@ -28,6 +29,9 @@ def filter_programs(
 
     if not allow_standardized_test:
         eligible = eligible[eligible["standardized_test_required"] == "No"]
+
+    if selected_fields:
+        eligible = eligible[eligible["field_category"].isin(selected_fields)]
 
     return eligible
 

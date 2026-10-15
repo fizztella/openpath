@@ -10,6 +10,9 @@ def test_program_data_has_required_columns():
     required_columns = {
         "university",
         "program",
+        "field_category",
+        "duration_years",
+        "japanese_required_at_admission",
         "ielts_overall",
         "first_year_academic_fees_jpy",
         "admissions_source",

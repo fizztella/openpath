@@ -42,3 +42,11 @@ def test_maximum_waiver_scenario_reduces_tuition_but_not_other_fees():
         "Tokyo International University": 610_000,
     }
 
+
+def test_field_filter_returns_only_selected_subjects():
+    result = filter_programs(
+        load_programs(), 7.0, True, 5_000_000, False, ["Computer Science"]
+    )
+
+    assert result["program"].tolist() == ["ICT Global All-English Program"]
+

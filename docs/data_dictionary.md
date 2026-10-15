@@ -6,9 +6,12 @@ This document explains what every field in `data/programs.csv` means.
 | --- | --- |
 | `university` | Official English name of the university or college. |
 | `program` | Name of the undergraduate program or major. |
+| `field_category` | Normalized subject category used for filtering. |
 | `country`, `city` | Study location. |
 | `degree` | Degree awarded after successful completion. |
+| `duration_years` | Standard full-time duration of the degree. |
 | `language` | Primary language of instruction. |
+| `japanese_required_at_admission` | Whether Japanese proficiency is required when applying. |
 | `intake` | Intake represented by this record. Requirements may differ between intakes. |
 | `application_deadline` | Final published deadline in ISO format (`YYYY-MM-DD`). |
 | `ielts_overall` | Published overall IELTS requirement or target. |
