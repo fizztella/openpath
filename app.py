@@ -15,7 +15,51 @@ st.set_page_config(page_title="OpenPath", page_icon="🎓", layout="wide")
 styles_path = Path(__file__).parent / "styles.css"
 st.markdown(f"<style>{styles_path.read_text()}</style>", unsafe_allow_html=True)
 
-hero_col, language_col = st.columns([4, 1])
+if "theme_mode" not in st.session_state:
+    st.session_state.theme_mode = "dark"
+
+theme = {
+    "dark": {
+        "bg": "#0b0f14",
+        "panel": "#141a22",
+        "panel_strong": "#19212b",
+        "text": "#edf2f7",
+        "muted": "#9aa7b5",
+        "border": "rgba(255, 255, 255, 0.10)",
+        "header": "rgba(11, 15, 20, 0.94)",
+    },
+    "light": {
+        "bg": "#f5f7fa",
+        "panel": "#ffffff",
+        "panel_strong": "#eef2f7",
+        "text": "#17202b",
+        "muted": "#5f6b78",
+        "border": "rgba(23, 32, 43, 0.13)",
+        "header": "rgba(245, 247, 250, 0.94)",
+    },
+}[st.session_state.theme_mode]
+st.markdown(
+    f"""
+    <style>
+    :root, .stApp {{
+        --op-bg: {theme["bg"]};
+        --op-panel: {theme["panel"]};
+        --op-panel-strong: {theme["panel_strong"]};
+        --op-text: {theme["text"]};
+        --op-muted: {theme["muted"]};
+        --op-border: {theme["border"]};
+        --background-color: {theme["bg"]};
+        --secondary-background-color: {theme["panel"]};
+        --text-color: {theme["text"]};
+        --primary-color: #3976c3;
+    }}
+    [data-testid="stHeader"] {{ background: {theme["header"]}; }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+hero_col, language_col, theme_col = st.columns([4, 1.15, 0.3])
 with language_col:
     current_language = st.session_state.get("interface_language", "English")
     language_name = st.selectbox(
@@ -29,6 +73,24 @@ language_code = LANGUAGES[language_name]
 
 def t(text):
     return translate(language_code, text)
+
+
+def toggle_theme():
+    st.session_state.theme_mode = (
+        "light" if st.session_state.theme_mode == "dark" else "dark"
+    )
+
+
+with theme_col:
+    st.button(
+        "☀️" if st.session_state.theme_mode == "dark" else "🌙",
+        help=t("Switch to light theme")
+        if st.session_state.theme_mode == "dark"
+        else t("Switch to dark theme"),
+        on_click=toggle_theme,
+        key="theme_toggle",
+        width="stretch",
+    )
 
 
 def timing_text(days):
@@ -365,12 +427,46 @@ with shortlist_tab:
         )
         .to_dict()
     )
+    filter_col1, filter_col2 = st.columns(2)
+    with filter_col1:
+        shortlist_countries = st.multiselect(
+            t("Filter by country"),
+            options=sorted(keyed_programs["country"].dropna().unique()),
+            format_func=t,
+            placeholder=t("All countries"),
+        )
+    with filter_col2:
+        shortlist_fields = st.multiselect(
+            t("Filter by field"),
+            options=sorted(keyed_programs["field_category"].dropna().unique()),
+            format_func=t,
+            placeholder=t("All fields"),
+        )
+
+    shortlist_choices = keyed_programs.copy()
+    if shortlist_countries:
+        shortlist_choices = shortlist_choices[
+            shortlist_choices["country"].isin(shortlist_countries)
+        ]
+    if shortlist_fields:
+        shortlist_choices = shortlist_choices[
+            shortlist_choices["field_category"].isin(shortlist_fields)
+        ]
+    existing_choices = st.session_state.get("shortlist_program_keys", [])
+    available_keys = shortlist_choices["program_key"].tolist()
+    available_keys.extend(key for key in existing_choices if key not in available_keys)
+
     selected_program_keys = st.multiselect(
         t("Add programs to compare"),
-        options=keyed_programs["program_key"].tolist(),
+        options=available_keys,
         format_func=lambda key: program_labels[key],
         key="shortlist_program_keys",
         placeholder=t("Choose one or more programs"),
+    )
+    st.caption(
+        t(
+            "Use the country and field filters to narrow the list. Start typing to search by university or program name."
+        )
     )
 
     shortlist = build_shortlist(all_evaluated, selected_program_keys)

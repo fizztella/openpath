@@ -717,6 +717,11 @@ for _language, _values in COMMON_VALUES.items():
 
 TRANSLATIONS["ru"].update(
     {
+        "Switch to light theme": "Включить светлую тему",
+        "Switch to dark theme": "Включить тёмную тему",
+        "Filter by country": "Фильтр по стране",
+        "Filter by field": "Фильтр по направлению",
+        "Use the country and field filters to narrow the list. Start typing to search by university or program name.": "Сузьте список с помощью фильтров по стране и направлению. Начните вводить название университета или программы для поиска.",
         "View details": "Подробнее",
         "Select a program to view details": "Выберите программу для просмотра",
         "Yes": "Да",
@@ -738,24 +743,44 @@ TRANSLATIONS["ru"].update(
 
 TRANSLATIONS["uk"].update(
     {
+        "Switch to light theme": "Увімкнути світлу тему",
+        "Switch to dark theme": "Увімкнути темну тему",
+        "Filter by country": "Фільтр за країною",
+        "Filter by field": "Фільтр за напрямом",
+        "Use the country and field filters to narrow the list. Start typing to search by university or program name.": "Звузьте список фільтрами за країною та напрямом. Почніть вводити назву університету або програми для пошуку.",
         "View details": "Докладніше",
         "Select a program to view details": "Оберіть програму для перегляду",
     }
 )
 TRANSLATIONS["es"].update(
     {
+        "Switch to light theme": "Cambiar al tema claro",
+        "Switch to dark theme": "Cambiar al tema oscuro",
+        "Filter by country": "Filtrar por país",
+        "Filter by field": "Filtrar por área",
+        "Use the country and field filters to narrow the list. Start typing to search by university or program name.": "Usa los filtros de país y área para reducir la lista. Escribe el nombre de una universidad o programa para buscar.",
         "View details": "Ver detalles",
         "Select a program to view details": "Selecciona un programa para ver los detalles",
     }
 )
 TRANSLATIONS["de"].update(
     {
+        "Switch to light theme": "Helles Design einschalten",
+        "Switch to dark theme": "Dunkles Design einschalten",
+        "Filter by country": "Nach Land filtern",
+        "Filter by field": "Nach Fach filtern",
+        "Use the country and field filters to narrow the list. Start typing to search by university or program name.": "Grenze die Liste nach Land und Fach ein. Tippe den Namen einer Hochschule oder eines Studiengangs zur Suche ein.",
         "View details": "Details anzeigen",
         "Select a program to view details": "Programm für Details auswählen",
     }
 )
 TRANSLATIONS["ja"].update(
     {
+        "Switch to light theme": "ライトテーマに切り替え",
+        "Switch to dark theme": "ダークテーマに切り替え",
+        "Filter by country": "国で絞り込む",
+        "Filter by field": "分野で絞り込む",
+        "Use the country and field filters to narrow the list. Start typing to search by university or program name.": "国と分野で候補を絞り、大学名またはプログラム名を入力して検索できます。",
         "View details": "詳細を見る",
         "Select a program to view details": "詳細を表示するプログラムを選択",
     }

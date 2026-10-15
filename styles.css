@@ -3,11 +3,11 @@
     --op-panel: #14191f;
     --op-panel-strong: #171d25;
     --op-border: rgba(255, 255, 255, 0.09);
-    --op-border-warm: rgba(174, 139, 93, 0.34);
+    --op-border-accent: rgba(57, 118, 195, 0.38);
     --op-text: #f4f1ea;
     --op-muted: #a8adb7;
-    --op-amber: #b78a52;
-    --op-amber-soft: #cfad7d;
+    --op-accent: #3976c3;
+    --op-accent-soft: #75a7e6;
     --op-green: #57c98b;
     --op-red: #ec7777;
 }
@@ -23,7 +23,7 @@
 }
 
 .block-container {
-    max-width: 1580px;
+    max-width: 1460px;
     padding-left: 2.25rem;
     padding-right: 2.25rem;
     padding-top: 2.3rem;
@@ -35,7 +35,7 @@
 }
 
 .op-eyebrow {
-    color: var(--op-amber-soft);
+    color: var(--op-accent-soft);
     font-size: 0.74rem;
     font-weight: 750;
     letter-spacing: 0.17em;
@@ -53,7 +53,7 @@
 }
 
 .op-hero .op-title span {
-    color: var(--op-amber) !important;
+    color: var(--op-accent) !important;
 }
 
 .op-subtitle {
@@ -92,7 +92,7 @@ h2, h3 {
 
 .stTabs [data-baseweb="tab-list"],
 [data-testid="stTabs"] [role="tablist"] {
-    background: rgba(18, 23, 30, 0.84);
+    background: var(--op-panel);
     border: 1px solid var(--op-border);
     border-radius: 8px;
     gap: 0.35rem;
@@ -111,18 +111,63 @@ h2, h3 {
 
 .stTabs [aria-selected="true"],
 [data-testid="stTabs"] [role="tab"][aria-selected="true"] {
-    background: rgba(183, 138, 82, 0.10);
-    color: var(--op-amber-soft) !important;
+    background: rgba(57, 118, 195, 0.11);
+    color: var(--op-accent-soft) !important;
 }
 
 .stTabs [data-baseweb="tab-highlight"] {
-    background-color: var(--op-amber);
+    background-color: var(--op-accent);
 }
 
 [data-testid="stSelectbox"] > div,
 [data-testid="stMultiSelect"] > div,
 [data-testid="stNumberInput"] > div {
     border-radius: 12px;
+}
+
+.stApp [data-baseweb="select"] > div,
+.stApp [data-baseweb="input"],
+.stApp [data-baseweb="base-input"],
+.stApp input,
+.stApp textarea {
+    background-color: var(--op-panel) !important;
+    color: var(--op-text) !important;
+}
+
+.stApp [data-baseweb="select"] {
+    background-color: var(--op-panel) !important;
+    border-color: var(--op-border) !important;
+    color: var(--op-text) !important;
+}
+
+.stApp [data-baseweb="select"] > div,
+.stApp [data-baseweb="select"] [role="button"] {
+    background-color: transparent !important;
+    color: var(--op-text) !important;
+}
+
+.stApp input::placeholder,
+.stApp textarea::placeholder {
+    color: var(--op-muted) !important;
+    opacity: 1;
+}
+
+.stApp [data-testid="stWidgetLabel"] p,
+.stApp [data-testid="stMarkdownContainer"] p,
+.stApp label,
+.stApp [role="radiogroup"] {
+    color: var(--op-text) !important;
+}
+
+.stApp [data-baseweb="select"] svg,
+.stApp button svg {
+    fill: var(--op-text) !important;
+}
+
+[data-baseweb="popover"],
+[data-baseweb="menu"] {
+    background-color: var(--op-panel) !important;
+    color: var(--op-text) !important;
 }
 
 [data-testid="stDataFrame"] {
@@ -141,7 +186,7 @@ h2, h3 {
 }
 
 .op-result-card:hover {
-    border-color: var(--op-border-warm);
+    border-color: var(--op-border-accent);
 }
 
 .op-result-card h3 {
@@ -150,7 +195,7 @@ h2, h3 {
 }
 
 .op-card-status {
-    color: var(--op-amber-soft);
+    color: var(--op-accent-soft);
     font-size: 0.78rem;
     font-weight: 720;
 }
@@ -202,7 +247,7 @@ h2, h3 {
 }
 
 [data-testid="stExpander"]:hover {
-    border-color: var(--op-border-warm) !important;
+    border-color: var(--op-border-accent) !important;
 }
 
 div[data-baseweb="modal"] {
@@ -224,7 +269,9 @@ div[data-baseweb="modal"] {
 .stButton > button,
 .stDownloadButton > button,
 [data-testid="stLinkButton"] a {
-    border: 1px solid var(--op-border-warm) !important;
+    background: var(--op-panel) !important;
+    border: 1px solid var(--op-border-accent) !important;
+    color: var(--op-text) !important;
     border-radius: 7px !important;
     font-weight: 700 !important;
     transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
@@ -233,9 +280,9 @@ div[data-baseweb="modal"] {
 .stButton > button:hover,
 .stDownloadButton > button:hover,
 [data-testid="stLinkButton"] a:hover {
-    background: rgba(232, 166, 87, 0.12) !important;
-    border-color: var(--op-amber) !important;
-    color: var(--op-amber-soft) !important;
+    background: rgba(57, 118, 195, 0.10) !important;
+    border-color: var(--op-accent) !important;
+    color: var(--op-accent-soft) !important;
 }
 
 [data-testid="stAlert"] {
@@ -244,7 +291,7 @@ div[data-baseweb="modal"] {
 }
 
 [data-testid="stProgress"] > div > div > div > div {
-    background: var(--op-amber);
+    background: var(--op-accent);
 }
 
 .op-page-count {
