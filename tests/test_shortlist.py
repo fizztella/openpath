@@ -11,6 +11,7 @@ from shortlist import (
     build_shortlist,
     next_deadline,
     shortlist_xlsx,
+    toggle_program_key,
 )
 
 DATA_PATH = Path(__file__).parents[1] / "data" / "programs.csv"
@@ -33,6 +34,13 @@ def test_shortlist_contains_only_selected_programs():
 def test_add_unique_program_key_does_not_create_duplicates():
     assert add_unique_program_key(["one"], "two") == ["one", "two"]
     assert add_unique_program_key(["one"], "one") == ["one"]
+
+
+def test_toggle_program_key_adds_and_removes_the_same_program():
+    selected = toggle_program_key([], "one")
+    assert selected == ["one"]
+
+    assert toggle_program_key(selected, "one") == []
 
 
 def test_shortlist_is_sorted_by_deadline():

@@ -31,3 +31,11 @@ def test_result_card_can_add_program_to_comparison():
 
     assert not app.exception
     assert len(app.session_state["shortlist_program_keys"]) == 1
+
+    remove_button = next(
+        button for button in app.button if button.label == "Remove from comparison"
+    )
+    remove_button.click().run()
+
+    assert not app.exception
+    assert app.session_state["shortlist_program_keys"] == []

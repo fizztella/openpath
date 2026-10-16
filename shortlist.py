@@ -23,6 +23,13 @@ def add_unique_program_key(selected_program_keys: list[str], new_key: str) -> li
     return [*selected_program_keys, new_key]
 
 
+def toggle_program_key(selected_program_keys: list[str], program_key: str) -> list[str]:
+    """Toggle comparison membership while preserving the remaining order."""
+    if program_key in selected_program_keys:
+        return [key for key in selected_program_keys if key != program_key]
+    return [*selected_program_keys, program_key]
+
+
 def build_shortlist(
     evaluated_programs: pd.DataFrame, selected_program_keys: list[str]
 ) -> pd.DataFrame:

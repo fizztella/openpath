@@ -14,6 +14,7 @@ from shortlist import (
     build_shortlist,
     next_deadline,
     shortlist_xlsx,
+    toggle_program_key,
 )
 from timeline import build_application_timeline, next_timeline_event, timeline_xlsx
 
@@ -173,6 +174,17 @@ def add_program_to_shortlist(program_key):
         selected, program_key
     )
     st.query_params["shortlist"] = st.session_state.shortlist_program_keys
+
+
+def toggle_program_in_shortlist(program_key):
+    selected = st.session_state.get("shortlist_program_keys", [])
+    st.session_state.shortlist_program_keys = toggle_program_key(
+        selected, program_key
+    )
+    if st.session_state.shortlist_program_keys:
+        st.query_params["shortlist"] = st.session_state.shortlist_program_keys
+    elif "shortlist" in st.query_params:
+        del st.query_params["shortlist"]
 
 
 def add_shortlist_candidate():
@@ -496,12 +508,11 @@ with program_search_tab:
                             ):
                                 show_program_dialog(program)
                             compare_col.button(
-                                t("In comparison")
+                                t("Remove from comparison")
                                 if already_selected
                                 else t("Add to comparison"),
                                 key=f"compare::{stable_key}",
-                                disabled=already_selected,
-                                on_click=add_program_to_shortlist,
+                                on_click=toggle_program_in_shortlist,
                                 args=(stable_key,),
                                 width="stretch",
                             )
@@ -539,12 +550,11 @@ with program_search_tab:
                     ):
                         show_program_dialog(program)
                     compare_col.button(
-                        t("In comparison")
+                        t("Remove from comparison")
                         if already_selected
                         else t("Add to comparison"),
                         key=f"compact_compare::{index}",
-                        disabled=already_selected,
-                        on_click=add_program_to_shortlist,
+                        on_click=toggle_program_in_shortlist,
                         args=(stable_key,),
                         width="stretch",
                     )
