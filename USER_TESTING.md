@@ -83,7 +83,7 @@ The first testing round resulted in the following product iteration:
 - shortlist filters for country and field;
 - visual corrections for light-theme controls, dialogs, selected filter tags, and dropdown menus.
 
-Automated tests were run after the implementation changes. The project currently has 40 passing tests covering filtering, data integrity, presentation, shortlist behavior, timeline generation, checklist generation, localization, and Excel exports.
+Automated tests were run after the implementation changes. The project currently has 51 passing tests covering filtering, data integrity, presentation, shortlist behavior, timeline generation, checklist generation, localization, Excel exports, and the main comparison workflows.
 
 ## 7. Round 2: Follow-up Validation
 
@@ -123,9 +123,30 @@ Round 2 indicates that the main navigation and visual redesign improved perceive
 
 Some suggestions conflict and therefore require product judgement. One participant considered the separate Details action unnecessary, while another requested equal access to explanations from compact-table mode. The appropriate response is not to remove evidence entirely, but to reduce redundant steps and provide one consistent detail interaction from both result views.
 
-## 8. Limitations
+## 8. Round 3: Post-release Review
 
-- Each round involved only three participants, for a total of six usability sessions.
+One additional participant independently reviewed the published application after the `v1.0` release. Device, browser, and interface language were not recorded for this informal follow-up. The participant understood the purpose of the service, considered the project visually complete, and rated the experience **4/5**.
+
+### Round 3 observations
+
+| Priority | Observation | Evidence | Product response | Status |
+|---|---|---|---|---|
+| Critical | Adding a program through the comparison dropdown caused a `StreamlitWidgetAlreadyInstantiatedError`. | Reproduced from the participant's screenshot and traced to clearing widget state after widget creation. | Moved the state update into a callback and added an automated regression test covering the complete dropdown-add workflow. | Implemented in `v1.0.1` |
+| High | Choosing programs for comparison through a separate dropdown was inconvenient. | Participant preferred adding a program directly while browsing search results. | Added comparison controls to both result cards and compact rows. The same control now adds or removes a program without requiring navigation to another tab. | Implemented in `v1.0.1–v1.0.3` |
+| High | First-time visitors might not know where selected programs can be compared. | Participant could add a program but found the destination unclear. | Renamed the tab to **Compare & timeline** and added an in-page message directing users to it after a selection. | Implemented in `v1.0.2` |
+| Medium | Filters occupied most of the initial viewport and pushed results below the fold. | Participant reported excessive scrolling before reaching results. | Moved advanced filters into a collapsible section while keeping search visible. | Implemented in `v1.0.1` |
+| Medium | Program details were not sufficiently discoverable when only the title area was interactive. | Participant requested explicit actions. | Added separate **View details** and **Add to comparison** buttons at the bottom of every card. | Implemented in `v1.0.2` |
+| Medium | Clickable program names disrupted alignment in compact-table mode. | Reproduced from the participant's screenshot. | Restored names as normal text and introduced dedicated Details and Compare action columns. | Implemented in `v1.0.2` |
+| Low | The search field did not stand out enough. | Participant observation. | Increased its height and added a restrained accent border. | Implemented in `v1.0.1` |
+| Low | Text in the light theme appeared too dark and visually harsh. | Participant observation with screenshots. | Softened the primary light-theme text and border colors while retaining readable contrast. | Implemented in `v1.0.2` |
+
+### Interpretation
+
+The post-release review confirmed that OpenPath's purpose and overall completeness were clear, but exposed friction in the central comparison workflow. The most valuable finding was the reproducible runtime error, which automated tests had not previously covered. The resulting regression tests now exercise comparison through both the dropdown and result cards. The remaining changes focused on discoverability and layout rather than expanding the project's scope.
+
+## 9. Limitations
+
+- The first two rounds involved three participants each; the post-release review added one participant, for a total of seven usability sessions.
 - Participants were recruited from the developer's existing online network.
 - The participants do not necessarily represent every target country, education system, language, or accessibility need.
 - Early feedback was collected in a relatively informal format.
@@ -134,8 +155,8 @@ Some suggestions conflict and therefore require product judgement. One participa
 
 Future testing should include applicants actively researching international education, mobile users, people using different interface languages, and at least one participant unfamiliar with the project or its developer.
 
-## 9. Conclusion
+## 10. Conclusion
 
 The testing changed OpenPath substantially. Round 1 exposed problems that were not obvious during development, including incomplete localization, an unusable spreadsheet export, inefficient program-detail navigation, unstable checklist interaction, and difficulty finding shortlist options. Round 2 showed improved overall usability while identifying theme consistency, session persistence, component localization, and access-to-evidence issues for the next iteration.
 
-The project therefore demonstrates more than implementation work. It shows an iterative process of identifying a real problem, building a prototype, testing it with users, evaluating evidence, making scoped product decisions, and validating the resulting changes.
+The project therefore demonstrates more than implementation work. It shows an iterative process of identifying a real problem, building a prototype, testing it with users, evaluating evidence, making scoped product decisions, and validating the resulting changes. The post-release review also demonstrates maintenance discipline: a production error was reproduced, fixed, protected by regression tests, and delivered through scoped patch releases.
