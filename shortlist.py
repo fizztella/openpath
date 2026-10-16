@@ -16,6 +16,13 @@ def add_program_keys(programs: pd.DataFrame) -> pd.DataFrame:
     return programs
 
 
+def add_unique_program_key(selected_program_keys: list[str], new_key: str) -> list[str]:
+    """Add a program once while preserving the user's comparison order."""
+    if new_key in selected_program_keys:
+        return list(selected_program_keys)
+    return [*selected_program_keys, new_key]
+
+
 def build_shortlist(
     evaluated_programs: pd.DataFrame, selected_program_keys: list[str]
 ) -> pd.DataFrame:

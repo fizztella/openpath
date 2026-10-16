@@ -8,7 +8,13 @@ from checklist import build_application_checklist, checklist_progress
 from filters import evaluate_programs
 from i18n import LANGUAGES, translate
 from presentation import paginate_results, search_programs
-from shortlist import add_program_keys, build_shortlist, next_deadline, shortlist_xlsx
+from shortlist import (
+    add_program_keys,
+    add_unique_program_key,
+    build_shortlist,
+    next_deadline,
+    shortlist_xlsx,
+)
 from timeline import build_application_timeline, next_timeline_event, timeline_xlsx
 
 st.set_page_config(page_title="OpenPath", page_icon="🎓", layout="wide")
@@ -161,6 +167,21 @@ def reset_program_filters():
     st.session_state.allow_standardized_test = False
 
 
+def add_program_to_shortlist(program_key):
+    selected = st.session_state.get("shortlist_program_keys", [])
+    st.session_state.shortlist_program_keys = add_unique_program_key(
+        selected, program_key
+    )
+    st.query_params["shortlist"] = st.session_state.shortlist_program_keys
+
+
+def add_shortlist_candidate():
+    candidate = st.session_state.get("shortlist_candidate")
+    if candidate is not None:
+        add_program_to_shortlist(candidate)
+    st.session_state.shortlist_candidate = None
+
+
 def render_program_details(program):
     status = program["eligibility_status"]
     message = t(str(program["eligibility_summary"]))
@@ -272,6 +293,13 @@ with hero_col:
 
 data_path = Path(__file__).parent / "data" / "programs.csv"
 programs = pd.read_csv(data_path)
+catalog_with_keys = add_program_keys(programs)
+valid_program_keys = set(catalog_with_keys["program_key"])
+if "shortlist_program_keys" not in st.session_state:
+    saved_keys = st.query_params.get_all("shortlist")
+    st.session_state.shortlist_program_keys = [
+        key for key in saved_keys if key in valid_program_keys
+    ]
 
 st.caption(
     t(
@@ -295,54 +323,55 @@ with program_search_tab:
         placeholder=t("Start typing to narrow the results"),
         key="program_query",
     )
-    country_col, field_col, _ = st.columns([1, 1, 0.45])
-    with country_col:
-        selected_countries = st.pills(
-            t("Countries"),
-            options=sorted(programs["country"].unique()),
-            format_func=t,
-            selection_mode="multi",
-            key="program_countries",
-            wrap=True,
+    with st.expander(t("Filters"), expanded=False):
+        country_col, field_col, _ = st.columns([1, 1, 0.45])
+        with country_col:
+            selected_countries = st.pills(
+                t("Countries"),
+                options=sorted(programs["country"].unique()),
+                format_func=t,
+                selection_mode="multi",
+                key="program_countries",
+                wrap=True,
+            )
+        with field_col:
+            selected_fields = st.pills(
+                t("Fields of study"),
+                options=sorted(programs["field_category"].unique()),
+                format_func=t,
+                selection_mode="multi",
+                key="program_fields",
+                wrap=True,
+            )
+        score_col, budget_col, _ = st.columns([1, 1, 0.45])
+        with score_col:
+            ielts_score = st.slider(
+                t("IELTS overall score"), 0.0, 9.0, 6.0, 0.5, key="ielts_score"
+            )
+        with budget_col:
+            max_first_year_fees = st.number_input(
+                t("Maximum first-year academic fees (USD)"),
+                min_value=0,
+                max_value=100_000,
+                value=20_000,
+                step=1_000,
+                key="max_first_year_fees",
+            )
+        use_maximum_tuition_waiver = st.checkbox(
+            t(
+                "Use the maximum published tuition waiver (best-case scenario, not a prediction)"
+            ),
+            key="use_maximum_tuition_waiver",
         )
-    with field_col:
-        selected_fields = st.pills(
-            t("Fields of study"),
-            options=sorted(programs["field_category"].unique()),
-            format_func=t,
-            selection_mode="multi",
-            key="program_fields",
-            wrap=True,
+        allow_standardized_test = st.checkbox(
+            t("I can complete an additional standardized academic test"),
+            key="allow_standardized_test",
         )
-    score_col, budget_col, _ = st.columns([1, 1, 0.45])
-    with score_col:
-        ielts_score = st.slider(
-            t("IELTS overall score"), 0.0, 9.0, 6.0, 0.5, key="ielts_score"
+        st.button(
+            t("Reset filters"),
+            on_click=reset_program_filters,
+            key="reset_program_filters",
         )
-    with budget_col:
-        max_first_year_fees = st.number_input(
-            t("Maximum first-year academic fees (USD)"),
-            min_value=0,
-            max_value=100_000,
-            value=20_000,
-            step=1_000,
-            key="max_first_year_fees",
-        )
-    use_maximum_tuition_waiver = st.checkbox(
-        t(
-            "Use the maximum published tuition waiver (best-case scenario, not a prediction)"
-        ),
-        key="use_maximum_tuition_waiver",
-    )
-    allow_standardized_test = st.checkbox(
-        t("I can complete an additional standardized academic test"),
-        key="allow_standardized_test",
-    )
-    st.button(
-        t("Reset filters"),
-        on_click=reset_program_filters,
-        key="reset_program_filters",
-    )
 
     all_evaluated = evaluate_programs(
         programs,
@@ -438,12 +467,18 @@ with program_search_tab:
                             str(deadline) if pd.notna(deadline) else t("Not published")
                         )
                         with st.container(border=True):
+                            stable_key = f"{program['university']}::{program['program']}"
                             st.markdown(
                                 f"<div class='op-card-status'>{status_icons[program['eligibility_status']]}</div>",
                                 unsafe_allow_html=True,
                             )
-                            st.markdown(f"### {program['university']}")
-                            st.markdown(f"**{program['program']}**")
+                            if st.button(
+                                f"{program['university']}\n\n{program['program']}",
+                                key=f"card_title::{stable_key}",
+                                type="tertiary",
+                                width="stretch",
+                            ):
+                                show_program_dialog(program)
                             st.caption(
                                 f"{t(str(program['country']))} · "
                                 f"{t(str(program['field_category']))} · {program['intake']}"
@@ -455,22 +490,33 @@ with program_search_tab:
                             )
                             deadline_col.metric(t("Deadline"), deadline_text)
                             st.caption(t(str(program["eligibility_summary"])))
-                            if st.button(
-                                t("View details"),
-                                key=f"details::{program['university']}::{program['program']}",
+                            already_selected = stable_key in st.session_state.shortlist_program_keys
+                            st.button(
+                                t("In comparison")
+                                if already_selected
+                                else t("Add to comparison"),
+                                key=f"compare::{stable_key}",
+                                disabled=already_selected,
+                                on_click=add_program_to_shortlist,
+                                args=(stable_key,),
                                 width="stretch",
-                            ):
-                                show_program_dialog(program)
+                            )
         else:
             for index, program in programs_to_show.iterrows():
                 with st.container(border=True):
                     status_col, name_col, fee_col, deadline_col, action_col = st.columns(
-                        [1.05, 3.2, 1, 1.15, 0.85]
+                        [1.05, 3.2, 1, 1.15, 1.2]
                     )
+                    stable_key = f"{program['university']}::{program['program']}"
                     status_col.markdown(f"**{status_icons[program['eligibility_status']]}**")
-                    name_col.markdown(
-                        f"**{program['university']}**  \n{program['program']} · {t(str(program['country']))}"
-                    )
+                    if name_col.button(
+                        f"{program['university']} — {program['program']}",
+                        key=f"compact_title::{stable_key}",
+                        type="tertiary",
+                        width="stretch",
+                    ):
+                        show_program_dialog(program)
+                    name_col.caption(t(str(program["country"])))
                     fee_col.markdown(
                         f"{t('Estimated fees')}  \n**${int(program['estimated_first_year_fees_usd']):,}**"
                     )
@@ -478,10 +524,17 @@ with program_search_tab:
                     deadline_col.markdown(
                         f"{t('Deadline')}  \n**{deadline if pd.notna(deadline) else t('Not published')}**"
                     )
-                    if action_col.button(
-                        t("View details"), key=f"compact_details::{index}", width="stretch"
-                    ):
-                        show_program_dialog(program)
+                    already_selected = stable_key in st.session_state.shortlist_program_keys
+                    action_col.button(
+                        t("In comparison")
+                        if already_selected
+                        else t("Add to comparison"),
+                        key=f"compact_compare::{index}",
+                        disabled=already_selected,
+                        on_click=add_program_to_shortlist,
+                        args=(stable_key,),
+                        width="stretch",
+                    )
 
 with shortlist_tab:
     st.divider()
@@ -522,12 +575,6 @@ with shortlist_tab:
         shortlist_choices = shortlist_choices[
             shortlist_choices["field_category"].isin(shortlist_fields)
         ]
-    valid_program_keys = set(program_labels)
-    if "shortlist_program_keys" not in st.session_state:
-        saved_keys = st.query_params.get_all("shortlist")
-        st.session_state.shortlist_program_keys = [
-            key for key in saved_keys if key in valid_program_keys
-        ]
     selected_program_keys = st.session_state.shortlist_program_keys
     available_keys = [
         key
@@ -551,14 +598,11 @@ with shortlist_tab:
             t("Add"),
             disabled=shortlist_candidate is None,
             key="add_shortlist_program",
+            on_click=add_shortlist_candidate,
             width="stretch",
         )
-    if add_program and shortlist_candidate is not None:
-        selected_program_keys = [*selected_program_keys, shortlist_candidate]
-        st.session_state.shortlist_program_keys = selected_program_keys
-        st.query_params["shortlist"] = selected_program_keys
-        st.session_state.shortlist_candidate = None
-        st.rerun()
+    if add_program:
+        selected_program_keys = st.session_state.shortlist_program_keys
 
     if selected_program_keys:
         st.markdown(f"**{t('Selected for comparison')}**")

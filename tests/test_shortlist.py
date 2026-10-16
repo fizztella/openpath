@@ -5,7 +5,13 @@ from pathlib import Path
 import pandas as pd
 
 from filters import evaluate_programs
-from shortlist import add_program_keys, build_shortlist, next_deadline, shortlist_xlsx
+from shortlist import (
+    add_program_keys,
+    add_unique_program_key,
+    build_shortlist,
+    next_deadline,
+    shortlist_xlsx,
+)
 
 DATA_PATH = Path(__file__).parents[1] / "data" / "programs.csv"
 
@@ -22,6 +28,11 @@ def test_shortlist_contains_only_selected_programs():
     shortlist = build_shortlist(evaluated, selected)
 
     assert set(shortlist["program_key"]) == set(selected)
+
+
+def test_add_unique_program_key_does_not_create_duplicates():
+    assert add_unique_program_key(["one"], "two") == ["one", "two"]
+    assert add_unique_program_key(["one"], "one") == ["one"]
 
 
 def test_shortlist_is_sorted_by_deadline():

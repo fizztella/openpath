@@ -27,6 +27,8 @@ def test_sources_limitation_is_translated_in_every_non_english_language():
 def test_new_filter_controls_are_localized():
     for language_code in ("ru", "uk", "es", "de", "ja"):
         assert translate(language_code, "Reset filters") != "Reset filters"
+        assert translate(language_code, "Filters") != "Filters"
+        assert translate(language_code, "Add to comparison") != "Add to comparison"
         assert (
             translate(language_code, "Not applicable — OpenPath recommendation")
             != "Not applicable — OpenPath recommendation"
