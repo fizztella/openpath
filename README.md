@@ -8,6 +8,25 @@ The interface is available in English, Russian, Ukrainian, Spanish, German, and 
 
 The current catalog compares 43 undergraduate programs across 21 universities in Japan, Austria, the United States, Germany, and South Korea. Programs can be searched by name or location and filtered by language, field, country, test requirements, and budget.
 
+## Screenshots
+
+### Desktop — dark theme
+
+![OpenPath program search in the dark theme](docs/screenshots/openpath-dark-desktop.jpg)
+
+### Desktop — light theme
+
+![OpenPath program search in the light theme](docs/screenshots/openpath-light-desktop.jpg)
+
+<details>
+<summary>Mobile themes</summary>
+
+| Dark theme | Light theme |
+| --- | --- |
+| ![OpenPath mobile dark theme](docs/screenshots/openpath-dark-mobile.jpg) | ![OpenPath mobile light theme](docs/screenshots/openpath-light-mobile.jpg) |
+
+</details>
+
 ## Current capabilities
 
 - Filter programs by country, subject, IELTS score, SAT requirement, and budget.

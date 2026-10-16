@@ -482,6 +482,16 @@ div[data-baseweb="modal"] {
     line-height: 1.65rem;
 }
 
+.st-key-theme_toggle {
+    margin-left: auto;
+    width: 3.25rem !important;
+}
+
+.st-key-theme_toggle [data-testid="stTooltipHoverTarget"],
+.st-key-theme_toggle button {
+    width: 3.25rem !important;
+}
+
 [data-testid="stVerticalBlockBorderWrapper"] {
     border-radius: 3px !important;
 }

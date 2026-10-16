@@ -13,6 +13,7 @@ from timeline import build_application_timeline, next_timeline_event, timeline_x
 
 st.set_page_config(page_title="OpenPath", page_icon="🎓", layout="wide")
 
+# Load shared styles before applying the selected theme's color tokens.
 styles_path = Path(__file__).parent / "styles.css"
 st.markdown(f"<style>{styles_path.read_text()}</style>", unsafe_allow_html=True)
 
@@ -113,7 +114,7 @@ with theme_col:
         else t("Switch to dark theme"),
         on_click=toggle_theme,
         key="theme_toggle",
-        width="stretch",
+        width="content",
     )
 
 
