@@ -40,9 +40,9 @@ theme = {
         "bg": "#f5f7fa",
         "panel": "#ffffff",
         "panel_strong": "#eef2f7",
-        "text": "#17202b",
+        "text": "#2b3745",
         "muted": "#5f6b78",
-        "border": "rgba(23, 32, 43, 0.13)",
+        "border": "rgba(43, 55, 69, 0.13)",
         "header": "rgba(245, 247, 250, 0.94)",
     },
 }[st.session_state.theme_mode]
@@ -313,7 +313,7 @@ col2.metric(t("Universities"), programs["university"].nunique())
 col3.metric(t("Countries"), programs["country"].nunique())
 
 program_search_tab, shortlist_tab = st.tabs(
-    [f"🔎 {t('Program search')}", f"⭐ {t('Shortlist & timeline')}"]
+    [f"🔎 {t('Program search')}", f"⚖️ {t('Compare & timeline')}"]
 )
 
 with program_search_tab:
@@ -472,13 +472,8 @@ with program_search_tab:
                                 f"<div class='op-card-status'>{status_icons[program['eligibility_status']]}</div>",
                                 unsafe_allow_html=True,
                             )
-                            if st.button(
-                                f"{program['university']}\n\n{program['program']}",
-                                key=f"card_title::{stable_key}",
-                                type="tertiary",
-                                width="stretch",
-                            ):
-                                show_program_dialog(program)
+                            st.markdown(f"### {program['university']}")
+                            st.markdown(f"**{program['program']}**")
                             st.caption(
                                 f"{t(str(program['country']))} · "
                                 f"{t(str(program['field_category']))} · {program['intake']}"
@@ -490,8 +485,17 @@ with program_search_tab:
                             )
                             deadline_col.metric(t("Deadline"), deadline_text)
                             st.caption(t(str(program["eligibility_summary"])))
-                            already_selected = stable_key in st.session_state.shortlist_program_keys
-                            st.button(
+                            already_selected = (
+                                stable_key in st.session_state.shortlist_program_keys
+                            )
+                            details_col, compare_col = st.columns(2)
+                            if details_col.button(
+                                t("View details"),
+                                key=f"details::{stable_key}",
+                                width="stretch",
+                            ):
+                                show_program_dialog(program)
+                            compare_col.button(
                                 t("In comparison")
                                 if already_selected
                                 else t("Add to comparison"),
@@ -504,19 +508,22 @@ with program_search_tab:
         else:
             for index, program in programs_to_show.iterrows():
                 with st.container(border=True):
-                    status_col, name_col, fee_col, deadline_col, action_col = st.columns(
-                        [1.05, 3.2, 1, 1.15, 1.2]
+                    (
+                        status_col,
+                        name_col,
+                        fee_col,
+                        deadline_col,
+                        details_col,
+                        compare_col,
+                    ) = st.columns(
+                        [1.05, 3.4, 1, 1.15, 0.9, 1.25]
                     )
                     stable_key = f"{program['university']}::{program['program']}"
                     status_col.markdown(f"**{status_icons[program['eligibility_status']]}**")
-                    if name_col.button(
-                        f"{program['university']} — {program['program']}",
-                        key=f"compact_title::{stable_key}",
-                        type="tertiary",
-                        width="stretch",
-                    ):
-                        show_program_dialog(program)
-                    name_col.caption(t(str(program["country"])))
+                    name_col.markdown(
+                        f"**{program['university']}**  \n"
+                        f"{program['program']} · {t(str(program['country']))}"
+                    )
                     fee_col.markdown(
                         f"{t('Estimated fees')}  \n**${int(program['estimated_first_year_fees_usd']):,}**"
                     )
@@ -525,7 +532,13 @@ with program_search_tab:
                         f"{t('Deadline')}  \n**{deadline if pd.notna(deadline) else t('Not published')}**"
                     )
                     already_selected = stable_key in st.session_state.shortlist_program_keys
-                    action_col.button(
+                    if details_col.button(
+                        t("View details"),
+                        key=f"compact_details::{index}",
+                        width="stretch",
+                    ):
+                        show_program_dialog(program)
+                    compare_col.button(
                         t("In comparison")
                         if already_selected
                         else t("Add to comparison"),
@@ -535,6 +548,13 @@ with program_search_tab:
                         args=(stable_key,),
                         width="stretch",
                     )
+
+        if st.session_state.shortlist_program_keys:
+            st.info(
+                t(
+                    "Selected programs are available in the Compare & timeline tab above."
+                )
+            )
 
 with shortlist_tab:
     st.divider()

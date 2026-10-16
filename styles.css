@@ -376,31 +376,6 @@ h2, h3 {
     margin: 0.55rem 0 0.25rem;
 }
 
-[class*="st-key-card_title"] button,
-[class*="st-key-compact_title"] button {
-    background: transparent !important;
-    border: 0 !important;
-    color: var(--op-text) !important;
-    justify-content: flex-start !important;
-    min-height: 0 !important;
-    padding: 0.2rem 0 !important;
-    text-align: left !important;
-}
-
-[class*="st-key-card_title"] button p,
-[class*="st-key-compact_title"] button p {
-    color: var(--op-text) !important;
-    font-size: 1.05rem;
-    font-weight: 720;
-    text-align: left !important;
-    white-space: normal;
-}
-
-[class*="st-key-card_title"] button:hover p,
-[class*="st-key-compact_title"] button:hover p {
-    color: var(--op-accent-soft) !important;
-}
-
 .op-card-status {
     color: var(--op-accent-soft);
     font-size: 0.78rem;
