@@ -3,6 +3,17 @@ from math import ceil
 import pandas as pd
 
 
+def search_programs(programs: pd.DataFrame, query: str) -> pd.DataFrame:
+    """Search the user-facing program identity fields."""
+    normalized_query = query.strip().casefold()
+    if not normalized_query:
+        return programs.copy()
+
+    searchable_columns = ["university", "program", "city", "country"]
+    searchable_text = programs[searchable_columns].fillna("").astype(str).agg(" ".join, axis=1)
+    return programs[searchable_text.str.casefold().str.contains(normalized_query, regex=False)].copy()
+
+
 def paginate_results(
     programs: pd.DataFrame, page: int, page_size: int = 6
 ) -> tuple[pd.DataFrame, int, int]:

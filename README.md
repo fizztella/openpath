@@ -6,15 +6,15 @@ The interface is available in English, Russian, Ukrainian, Spanish, German, and 
 
 ## Project status
 
-The project is currently in its first development stage. The prototype compares undergraduate programs in Japan, Austria, and the United States using language, field, country, test, and budget filters.
+The current catalog compares 32 undergraduate programs across 17 universities in Japan, Austria, and the United States. Programs can be searched by name or location and filtered by language, field, country, test requirements, and budget.
 
-## Planned features
+## Current capabilities
 
 - Filter programs by country, subject, IELTS score, SAT requirement, and budget.
 - Compare tuition and estimated first-year costs in USD while preserving each university's published local currency.
 - Distinguish merit scholarships, need-based aid, and tuition waivers.
 - Classify every result as Eligible, Conditional, or Not eligible and explain why.
-- Build a personal shortlist, compare selected programs, and export it as CSV.
+- Build a persistent personal shortlist, compare selected programs, and export it as Excel.
 - Generate an application timeline that separates official dates from planning milestones.
 - Track a compact, requirement-aware application checklist for shortlisted programs.
 - Link every important value to an official source.

@@ -5,10 +5,17 @@ import pandas as pd
 DATA_PATH = Path(__file__).parents[1] / "data" / "programs.csv"
 
 
-def test_prototype_contains_at_least_ten_programs():
+def test_catalog_contains_at_least_thirty_programs():
     programs = pd.read_csv(DATA_PATH)
 
-    assert len(programs) >= 10
+    assert len(programs) >= 30
+
+
+def test_catalog_has_enough_variety_to_exercise_the_interface():
+    programs = pd.read_csv(DATA_PATH)
+
+    assert programs["university"].nunique() >= 17
+    assert programs["field_category"].nunique() >= 14
 
 
 def test_program_data_has_required_columns():

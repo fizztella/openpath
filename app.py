@@ -7,7 +7,7 @@ import streamlit as st
 from checklist import build_application_checklist, checklist_progress
 from filters import evaluate_programs
 from i18n import LANGUAGES, translate
-from presentation import paginate_results
+from presentation import paginate_results, search_programs
 from shortlist import add_program_keys, build_shortlist, next_deadline, shortlist_xlsx
 from timeline import build_application_timeline, next_timeline_event, timeline_xlsx
 
@@ -289,6 +289,11 @@ program_search_tab, shortlist_tab = st.tabs(
 
 with program_search_tab:
     st.subheader(t("Your profile"))
+    program_query = st.text_input(
+        t("Search by university, program, city, or country"),
+        placeholder=t("Start typing to narrow the results"),
+        key="program_query",
+    )
     country_col, field_col, _ = st.columns([1, 1, 0.45])
     with country_col:
         selected_countries = st.pills(
@@ -346,6 +351,7 @@ with program_search_tab:
         use_maximum_tuition_waiver=use_maximum_tuition_waiver,
     )
     evaluated = all_evaluated.copy()
+    evaluated = search_programs(evaluated, program_query)
     if selected_fields:
         evaluated = evaluated[evaluated["field_category"].isin(selected_fields)]
     if selected_countries:
