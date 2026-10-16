@@ -42,7 +42,7 @@ def test_next_deadline_ignores_past_dates():
 
     deadline = next_deadline(shortlist, today=date(2027, 1, 1))
 
-    assert deadline.strftime("%Y-%m-%d") == "2027-01-15"
+    assert deadline.strftime("%Y-%m-%d") == "2027-01-14"
 
 
 def test_excel_export_contains_comparison_fields():

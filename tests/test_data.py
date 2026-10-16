@@ -5,17 +5,26 @@ import pandas as pd
 DATA_PATH = Path(__file__).parents[1] / "data" / "programs.csv"
 
 
-def test_catalog_contains_at_least_thirty_programs():
+def test_catalog_contains_at_least_forty_programs():
     programs = pd.read_csv(DATA_PATH)
 
-    assert len(programs) >= 30
+    assert len(programs) >= 40
 
 
 def test_catalog_has_enough_variety_to_exercise_the_interface():
     programs = pd.read_csv(DATA_PATH)
 
-    assert programs["university"].nunique() >= 17
-    assert programs["field_category"].nunique() >= 14
+    assert programs["university"].nunique() >= 21
+    assert programs["field_category"].nunique() >= 18
+
+
+def test_catalog_contains_all_supported_countries_and_currencies():
+    programs = pd.read_csv(DATA_PATH)
+
+    assert {"Japan", "Austria", "United States", "Germany", "South Korea"}.issubset(
+        set(programs["country"])
+    )
+    assert {"JPY", "EUR", "USD", "KRW"}.issubset(set(programs["native_currency"]))
 
 
 def test_program_data_has_required_columns():

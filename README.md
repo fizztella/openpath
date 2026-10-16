@@ -6,7 +6,7 @@ The interface is available in English, Russian, Ukrainian, Spanish, German, and 
 
 ## Project status
 
-The current catalog compares 32 undergraduate programs across 17 universities in Japan, Austria, and the United States. Programs can be searched by name or location and filtered by language, field, country, test requirements, and budget.
+The current catalog compares 43 undergraduate programs across 21 universities in Japan, Austria, the United States, Germany, and South Korea. Programs can be searched by name or location and filtered by language, field, country, test requirements, and budget.
 
 ## Current capabilities
 
